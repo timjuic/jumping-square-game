@@ -1,10 +1,22 @@
+
 export default class Square {
-   constructor(size) {
+   constructor(size, color, posX, posY) {
       this.size = size
       this.position = {
-         x: 100,
-         y: 0,
+         x: posX,
+         y: posY,
       }
-      this.rotation = 0
+      this.color = color
+   }
+
+   draw() {
+      ctxLevel.fillStyle = this.color
+         
+      ctxLevel.fillRect(
+         this.position.x,
+         this.position.y,
+         this.size,
+         this.size,
+      )
    }
 }

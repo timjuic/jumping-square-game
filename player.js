@@ -6,8 +6,8 @@ const JUMP_VELOCITY_SPIN = 10
 
 
 export default class Player extends Square {
-   constructor(name, size, color) {
-      super(size)
+   constructor(name, size, color, posX, posY) {
+      super(size, color, posX, posY)
       this.name = name
       this.velocity = {
          x: 0,
@@ -18,33 +18,34 @@ export default class Player extends Square {
    }
 
    draw() {
-      window.ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height)
+      ctxPlayer.fillStyle = this.color
+      ctxPlayer.clearRect(0, 0, playerCanvas.width, playerCanvas.height)
       
       if (this.velocity.spin !== 0) {
-         ctx.save()
-         ctx.translate(
+         ctxPlayer.save()
+         ctxPlayer.translate(
             this.position.x + this.size / 2,
             this.position.y + this.size / 2
          )
-         ctx.rotate(this.rotation * Math.PI/360)
-         ctx.translate(
+         ctxPlayer.rotate(this.rotation * Math.PI/360)
+         ctxPlayer.translate(
             -(this.position.x + this.size / 2),
             -(this.position.y + this.size / 2)
          )
-         window.ctx.fillRect(
+         ctxPlayer.fillRect(
             this.position.x,
             this.position.y,
             this.size,
             this.size,
          )
-         ctx.restore()
+         ctxPlayer.restore()
          if (this.rotation % 360 === 0) {
             this.velocity.spin = 0
             this.rotation = 0
          }
       } else {
          
-         window.ctx.fillRect(
+         ctxPlayer.fillRect(
             this.position.x,
             this.position.y,
             this.size,
@@ -55,7 +56,7 @@ export default class Player extends Square {
    }
 
    applyGravity() {
-      if (this.position.y + this.size + this.velocity.y + GRAVITY < gameCanvas.height) {
+      if (this.position.y + this.size + this.velocity.y + GRAVITY < playerCanvas.height) {
          this.velocity.y += GRAVITY
          this.position.y += this.velocity.y
 
