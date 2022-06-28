@@ -1,9 +1,5 @@
 import Square from './square.js'
-
-const GRAVITY = 0.5
-const JUMP_VELOCITY_Y = 10
-const JUMP_VELOCITY_SPIN = 10
-
+import config from './game-config.js'
 
 export default class Player extends Square {
    constructor(name, size, color, posX, posY) {
@@ -15,6 +11,7 @@ export default class Player extends Square {
          spin: 0,
       }
       this.color = color
+      this.rotation = 0
    }
 
    draw() {
@@ -56,20 +53,51 @@ export default class Player extends Square {
    }
 
    applyGravity() {
-      if (this.position.y + this.size + this.velocity.y + GRAVITY < playerCanvas.height) {
-         this.velocity.y += GRAVITY
+      let [colliding, velocityToAdd] = this.checkForCollision()
+      // console.log(colliding, velocityToAdd);
+      if (!colliding) {
+         this.velocity.y += config.GRAVITY
          this.position.y += this.velocity.y
 
+         // If there is less distance left than the velocity y that is about to be applied to the player. Make velocity be that distance
+         
+
+         // If there is spin velocity, apply it 
          if (this.velocity.spin) {
             this.rotation += this.velocity.spin
          }
       } else {
          this.velocity.y = 0
+         if (velocityToAdd) this.position.y += velocityToAdd
       }
    }
 
    jump() {
-      this.velocity.y = -JUMP_VELOCITY_Y
-      this.velocity.spin = JUMP_VELOCITY_SPIN
+      this.velocity.y = -config.JUMP_VELOCITY_Y
+      this.velocity.spin = config.JUMP_VELOCITY_SPIN
+   }
+
+
+   checkForCollision() {
+      let playerPositionIfGravityApplied = this.position.y + this.size + this.velocity.y + config.GRAVITY
+      let possibleCollidingPlatforms = platforms.filter(platform => platform.tile === this.tile || platform.tile === this.tile+1)
+      let highestPlatformY = Math.min(...possibleCollidingPlatforms.map(p => p.position.y))
+      if (!highestPlatformY) highestPlatformY = levelCanvas.height
+      if (playerPositionIfGravityApplied <= highestPlatformY) return [false]
+      else if (possibleCollidingPlatforms.every(p => this.position.y - this.size > p.position.y)) return [false]
+      else return [true, (highestPlatformY - this.position.y - this.size) > 0 ? highestPlatformY - this.position.y - this.size : 0]
+   }
+
+
+   checkIfDied() {
+      let playerPosY = this.position.y + this.size
+      let possibleCollidingPlatforms = platforms.filter(platform => platform.tile === this.tile || platform.tile === this.tile+1)
+      if (possibleCollidingPlatforms.every(platform => {
+         console.log(Math.round(playerPosY), platform.position.y);
+         return Math.round(playerPosY) > platform.position.y
+      })) return true
+      else return false
    }
 }
+
+

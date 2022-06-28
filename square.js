@@ -1,4 +1,6 @@
 
+import config from './game-config.js'
+
 export default class Square {
    constructor(size, color, posX, posY) {
       this.size = size
@@ -7,6 +9,7 @@ export default class Square {
          y: posY,
       }
       this.color = color
+      this.tile = (posX - config.PLAYER_POSITION_X) / config.BLOCK_SIZE
    }
 
    draw() {
