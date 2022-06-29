@@ -72,7 +72,7 @@ export default class Player extends Square {
 
    jump() {
       this.velocity.y = -this.jumpVelocity
-      this.velocity.spin = config.JUMP_VELOCITY_SPIN
+      this.velocity.spin = config.JUMP_SPIN_VELOCITY
    }
 
 

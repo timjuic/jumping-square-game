@@ -1,6 +1,6 @@
 import Player from './player.js'
-import levels from './levels.js'
 import Square from './square.js'
+import levels from './levels.js'
 import config from './game-config.js'
 
 window.playerCanvas = document.getElementById('player-canvas')
@@ -11,24 +11,14 @@ window.platforms = []
 window.levelMovedBy = 0
 let ticksElapsed = 0
 let canvases = [playerCanvas, levelCanvas]
-let resizing = false
+let gameRunning = false
 let blockSize, gameSpeed, gravity, jumpVelocity
+let player1
 
 resizeGame()
 window.addEventListener('resize', resizeGame, false)
 window.addEventListener('orientationchange', resizeGame, false)
 
-config.PLAYER_POSITION_X = blockSize * 2
-
-
-// TODO
-// CREATE NEW PLAYER INSTANCE AFTER RESIZING,
-// THE CURRENT PROBLEM IS THAT IM CHANGING CONFIG VALUES, I SHOULD JSUT MAKE NEW VARIABLES
-
-// Adjust canvas size when browser window is resized
-
-
-var player1 = new Player('mratko', blockSize, 'brown', config.PLAYER_POSITION_X, 0, jumpVelocity, gravity)
 let raf
 
 
@@ -36,8 +26,6 @@ drawLevel()
 
 
 function gameLoop() {
-   if (resizing) return
-   console.log('running');
    ctxPlayer.clearRect(0, 0, playerCanvas.width, playerCanvas.height)
    player1.applyGravity(levels[0])
    player1.draw()
@@ -50,13 +38,14 @@ function gameLoop() {
       return
    }
 
+   // Checking if level was moved to its end, which means player has won
    if (levelMovedBy + player1.size >= levels[0][0].length * blockSize) {
       console.log('You win');
       return
    }
 
    // Getting distance for which platforms have been moved and dividing by blocksize to get the tile player is in currently
-   player1.tile = Math.floor(Math.abs(platforms[0].position.x - config.PLAYER_POSITION_X) / blockSize)
+   player1.tile = Math.floor(Math.abs(platforms[0].position.x - blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER) / blockSize)
    ticksElapsed++
    raf = requestAnimationFrame(gameLoop)
 }
@@ -70,18 +59,13 @@ function drawNextLevelFrame() {
    })
 }
 
-setTimeout(() => {
-   gameLoop()
-   player1.draw()
-}, 100);
-
-
 
 
 function drawLevel() {
    console.log('drawing level');
 
-   player1 = new Player('mratko', blockSize, 'brown', config.PLAYER_POSITION_X, 0, jumpVelocity, gravity)
+   player1 = new Player('mratko', blockSize, 'brown', blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER, 0, jumpVelocity, gravity)
+   player1.draw()
 
    // Going through the level data by columns, so the level is drawn from left to right
    window.platforms = []
@@ -89,8 +73,7 @@ function drawLevel() {
       for (let i = 0; i < levels[0].length; i++) {
          let blockType = levels[0][i][j]
          if (blockType === '#') {
-            console.log('posX', levelMovedBy, config.PLAYER_POSITION_X, blockSize * j);
-            var square = new Square(blockSize, 'black', levelMovedBy + config.PLAYER_POSITION_X + blockSize * j, blockSize * i)
+            var square = new Square(blockSize, 'black', levelMovedBy + blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER + blockSize * j, blockSize * i)
             platforms.push(square)
          } else continue
          
@@ -102,7 +85,6 @@ function drawLevel() {
 
 
 function resizeGame() {
-   resizing = true
    let newWidth = window.innerWidth
    let newHeight = window.innerHeight
    let newAspectRatio = newWidth / newHeight
@@ -126,20 +108,23 @@ function resizeGame() {
    gravity = blockSize * config.GRAVITY_MULTIPLIER
    jumpVelocity = blockSize * config.JUMP_VELOCITY_MULTIPLIER
    gameSpeed = blockSize * config.GAME_SPEED_MULTIPLIER
-   config.PLAYER_POSITION_X = blockSize * 2
    levelMovedBy = config.GAME_SPEED_MULTIPLIER * ticksElapsed
-   console.log(blockSize, gravity, jumpVelocity, gameSpeed);
 
    // Redrawing the game after resize
    drawLevel()
-   resizing = false
 }
 
 
 
 window.addEventListener('keydown', function(e) {
    if (e.code.toLowerCase() === 'arrowup') {
-      if (!player1.checkForCollision()[0]) return
-      player1.jump()
+      if (!gameRunning) {
+         gameRunning = true
+         gameLoop()
+      }
+      else {
+         if (!player1.checkForCollision()[0]) return
+         player1.jump()
+      }
    }
 })
