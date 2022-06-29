@@ -2,7 +2,7 @@ import Square from './square.js'
 import config from './game-config.js'
 
 export default class Player extends Square {
-   constructor(name, size, color, posX, posY) {
+   constructor(name, size, color, posX, posY, jumpVel, gravity) {
       super(size, color, posX, posY)
       this.name = name
       this.velocity = {
@@ -12,6 +12,8 @@ export default class Player extends Square {
       }
       this.color = color
       this.rotation = 0
+      this.jumpVelocity = jumpVel
+      this.gravity = gravity
    }
 
    draw() {
@@ -54,13 +56,9 @@ export default class Player extends Square {
 
    applyGravity() {
       let [colliding, velocityToAdd] = this.checkForCollision()
-      // console.log(colliding, velocityToAdd);
       if (!colliding) {
-         this.velocity.y += config.GRAVITY
+         this.velocity.y += this.gravity
          this.position.y += this.velocity.y
-
-         // If there is less distance left than the velocity y that is about to be applied to the player. Make velocity be that distance
-         
 
          // If there is spin velocity, apply it 
          if (this.velocity.spin) {
@@ -73,13 +71,13 @@ export default class Player extends Square {
    }
 
    jump() {
-      this.velocity.y = -config.JUMP_VELOCITY_Y
+      this.velocity.y = -this.jumpVelocity
       this.velocity.spin = config.JUMP_VELOCITY_SPIN
    }
 
 
    checkForCollision() {
-      let playerPositionIfGravityApplied = this.position.y + this.size + this.velocity.y + config.GRAVITY
+      let playerPositionIfGravityApplied = this.position.y + this.size + this.velocity.y + this.gravity
       let possibleCollidingPlatforms = platforms.filter(platform => platform.tile === this.tile || platform.tile === this.tile+1)
       let highestPlatformY = Math.min(...possibleCollidingPlatforms.map(p => p.position.y))
       if (!highestPlatformY) highestPlatformY = levelCanvas.height
@@ -91,7 +89,6 @@ export default class Player extends Square {
 
    checkIfDied() {
       let possibleCollidingPlatforms = platforms.filter(platform => platform.tile === this.tile || platform.tile === this.tile+1)
-      console.log(this.checkIfColliding(this, possibleCollidingPlatforms));
       if (this.checkIfColliding(this, possibleCollidingPlatforms)) return true
       else return false
    }

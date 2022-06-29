@@ -9,7 +9,8 @@ export default class Square {
          y: posY,
       }
       this.color = color
-      this.tile = (posX - config.PLAYER_POSITION_X) / config.BLOCK_SIZE
+      // all squares have the same size so "size" variable can be used below
+      this.tile = Math.floor((posX - config.PLAYER_POSITION_X) / size)
    }
 
    draw() {
