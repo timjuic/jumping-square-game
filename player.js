@@ -90,14 +90,27 @@ export default class Player extends Square {
 
 
    checkIfDied() {
-      let playerPosY = this.position.y + this.size
       let possibleCollidingPlatforms = platforms.filter(platform => platform.tile === this.tile || platform.tile === this.tile+1)
-      if (possibleCollidingPlatforms.every(platform => {
-         console.log(Math.round(playerPosY), platform.position.y);
-         return Math.round(playerPosY) > platform.position.y
-      })) return true
+      console.log(this.checkIfColliding(this, possibleCollidingPlatforms));
+      if (this.checkIfColliding(this, possibleCollidingPlatforms)) return true
       else return false
    }
+
+   checkIfColliding(player, platforms) {
+      return platforms.some(platform => {
+         if (player.position.y > platform.position.y && player.position.y < platform.position.y + platform.size ||
+            player.position.y + player.size > platform.position.y && player.position.y + player.size < platform.position.y + platform.size ||
+            player.position.y === platform.position.y && player.position.y + player.size === platform.position.y + platform.size ||
+            player.position.y + player.size > playerCanvas.height) {
+            return true
+         } else {
+            return false
+         }
+      })
+   }
 }
+
+
+
 
 
