@@ -15,14 +15,13 @@ let gameRunning = false
 let blockSize, gameSpeed, gravity, jumpVelocity
 let player1
 
+// Scaling the game to fit current window size
 resizeGame()
+
 window.addEventListener('resize', resizeGame, false)
 window.addEventListener('orientationchange', resizeGame, false)
 
 let raf
-
-
-drawLevel()
 
 
 function gameLoop() {
@@ -44,6 +43,7 @@ function gameLoop() {
       return
    }
 
+   
    // Getting distance for which platforms have been moved and dividing by blocksize to get the tile player is in currently
    player1.tile = Math.floor(Math.abs(platforms[0].position.x - blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER) / blockSize)
    ticksElapsed++
@@ -64,22 +64,22 @@ function drawNextLevelFrame() {
 function drawLevel() {
    console.log('drawing level');
 
-   player1 = new Player('mratko', blockSize, 'brown', blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER, 0, jumpVelocity, gravity)
-   player1.draw()
-
    // Going through the level data by columns, so the level is drawn from left to right
    window.platforms = []
    for (let j = 0; j < levels[0][0].length; j++) {
       for (let i = 0; i < levels[0].length; i++) {
          let blockType = levels[0][i][j]
          if (blockType === '#') {
-            var square = new Square(blockSize, 'black', levelMovedBy + blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER + blockSize * j, blockSize * i)
+            var square = new Square(blockSize, 'black', blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER + blockSize * j, blockSize * i)
             platforms.push(square)
          } else continue
          
          square.draw()
       }
    }
+
+   player1 = new Player('mratko', blockSize, 'brown', blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER, platforms[0].position.y - blockSize, jumpVelocity, gravity)
+   player1.draw()
 }
 
 
@@ -105,10 +105,10 @@ function resizeGame() {
    // Calculating game elements size depending on the canvas height and number of level rows
    blockSize = Math.floor(playerCanvas.height / levels[0].length)
    // Multiplying game config depending on the element size so the gamespeed / gravity is the same no matter the screen size
-   gravity = blockSize * config.GRAVITY_MULTIPLIER
-   jumpVelocity = blockSize * config.JUMP_VELOCITY_MULTIPLIER
-   gameSpeed = blockSize * config.GAME_SPEED_MULTIPLIER
-   levelMovedBy = config.GAME_SPEED_MULTIPLIER * ticksElapsed
+   gravity = blockSize * config.GRAVITY_MULTIPLIER * config.GLOBAL_GAME_SPEED_MULTIPLIER
+   jumpVelocity = blockSize * config.JUMP_VELOCITY_MULTIPLIER * config.GLOBAL_GAME_SPEED_MULTIPLIER
+   gameSpeed = blockSize * config.HORIZONTAL_MOVEMENT_SPEED_MULTIPLIER * config.GLOBAL_GAME_SPEED_MULTIPLIER
+   // levelMovedBy = config.GAME_SPEED_MULTIPLIER * ticksElapsed
 
    // Redrawing the game after resize
    drawLevel()
@@ -122,9 +122,7 @@ window.addEventListener('keydown', function(e) {
          gameRunning = true
          gameLoop()
       }
-      else {
-         if (!player1.checkForCollision()[0]) return
+      if (!player1.checkForCollision()[0]) return
          player1.jump()
-      }
    }
 })
