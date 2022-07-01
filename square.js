@@ -15,7 +15,7 @@ export default class Square {
 
    draw() {
       ctxLevel.fillStyle = this.color
-         
+
       ctxLevel.fillRect(
          this.position.x,
          this.position.y,

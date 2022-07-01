@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
    <meta charset="UTF-8">
    <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -8,8 +9,39 @@
    <script defer type="module" src="./app.js"></script>
    <title>Jumping Square Game</title>
 </head>
+
 <body>
+
+   <h1 class="game-title">Jumping Square Game</h1>
+
+   <div class="gui-container">
+      <div class="players-wrapper">
+         <div class="option-desc">Number of players</div>
+         <select name="player-number" id="player-number">
+            <option selected value="1">1 player</option>
+            <option value="2">2 players</option>
+         </select>
+      </div>
+      <div class="levels-wrapper">
+         <div class="option-desc">Level</div>
+         <select name="level-number" id="level-number">
+            <option value="1">Level 1</option>
+            <option value="2">Level 2</option>
+            <option value="3">Level 3</option>
+            <option value="4">Level 4</option>
+            <option value="5">Level 5</option>
+            <option value="6">Level 6</option>
+            <option value="7">Level 7</option>
+            <option value="8">Level 8</option>
+            <option value="9">Level 9</option>
+            <option value="10">Level 10</option>
+         </select>
+      </div>
+      <button class="play-btn">Play</button>
+   </div>
+
    <canvas id="level-canvas" class="game-canvas"></canvas>
    <canvas id="player-canvas" class="game-canvas"></canvas>
 </body>
+
 </html>
