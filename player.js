@@ -60,6 +60,7 @@ export default class Player extends Square {
    respawn(platforms) {
       this.position.x = this.size * config.BLOCK_DISTANCE_FROM_LEFT_BORDER
       this.position.y = platforms[0].position.y - this.size
+      this.rotation = 0
       this.draw()
    }
 }

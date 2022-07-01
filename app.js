@@ -36,7 +36,7 @@ playBtn.addEventListener('click', function () {
 
    resizeGame() // scaling the canvas for the current window size
 
-  generateLevel(levelIndex)
+   generateLevel(levelIndex)
 })
 
 // Scaling the game to fit current window size
@@ -55,8 +55,12 @@ function gameLoop() {
 
    clearCanvases()
 
+   level.bg.nextFrame()
+   level.drawBackground()
+
    level.nextFrame()
-   level.draw()
+   level.drawPlatforms()
+
 
    level.applyGravity(levelsData[levelIndex])
    player1.draw()
@@ -66,14 +70,16 @@ function gameLoop() {
       console.log('died');
       clearCanvases()
       level.reset()
-      level.draw()
+      level.bg.reset()
+      level.drawBackground()
+      level.drawPlatforms()
       player1.respawn(level.platforms)
       gamePaused = true
       return
    }
 
    // Checking if level was moved to its end, which means player has won
-   if (level.movedBy + player1.size >= levelsData[levelIndex][0].length * level.blockSize) {
+   if (level.movedBy + player1.size >= levelsData[levelIndex].mapData[0].length * level.blockSize) {
       console.log('You win');
       setTimeout(() => {
          levelIndex++
@@ -88,7 +94,7 @@ function gameLoop() {
 }
 
 
-function generateLevel(levelInd) {
+async function generateLevel(levelInd) {
    if (levelsData[levelInd] === undefined) return
 
    level = new Level(levelCanvas, levelsData[levelIndex])
@@ -96,8 +102,10 @@ function generateLevel(levelInd) {
    gamePaused = true
    clearCanvases()
    
-   level.generate()
-   level.draw()
+   await level.loadBackground()
+   level.drawBackground()
+   level.generatePlatforms()
+   level.drawPlatforms()
 
    player1 = new Player('mratko', level.blockSize, 'brown', level.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER, level.platforms[0].position.y - level.blockSize)
    level.addPlayer(player1)

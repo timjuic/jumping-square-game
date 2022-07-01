@@ -1,21 +1,27 @@
 import Square from './square.js'
 import config from './game-config.js'
+import Layer from './layer.js'
 
 export default class Level {
    constructor(canvas, levelData) {
       this.canvas = canvas
-      this.levelData = levelData
-      this.blockSize = this.canvas.height / this.levelData.length
+      this.mapData = levelData.mapData
+      this.blockSize = this.canvas.height / this.mapData.length
       this.platforms = []
       this.players = []
 
       this.calculateAssets()
+
+      this.bg = {
+         path: levelData.backgroundImage
+      }
+
    }
 
-   generate() {
-      for (let j = 0; j < this.levelData[0].length; j++) {
-         for (let i = 0; i < this.levelData.length; i++) {
-            let blockType = this.levelData[i][j]
+   generatePlatforms() {
+      for (let j = 0; j < this.mapData[0].length; j++) {
+         for (let i = 0; i < this.mapData.length; i++) {
+            let blockType = this.mapData[i][j]
             if (blockType === '#') {
                var square = new Square(
                   this.blockSize, 
@@ -29,10 +35,27 @@ export default class Level {
       }
    }
 
-   draw() {
+   drawPlatforms() {
       this.platforms.forEach(platform => {
          platform.draw()
       })
+   }
+
+   async loadBackground() {
+      async function LoadImage(src) {
+         return await new Promise((resolve, reject) => {
+            const img = new Image()
+            img.onload = () => resolve(img)
+            img.onerror = reject
+            img.src = src
+         })
+      }
+      let img = await LoadImage(this.bg.path)
+      this.bg = new Layer(img, this.canvas.width, this.canvas.height, 0.2, this.gameSpeed)
+   }
+
+   drawBackground() {
+      this.bg.draw()
    }
 
    nextFrame() {
@@ -106,6 +129,6 @@ export default class Level {
    reset() {
       this.platforms = []
       this.movedBy = 0
-      this.generate()
+      this.generatePlatforms()
    }
 }
