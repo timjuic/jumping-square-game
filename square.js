@@ -10,7 +10,7 @@ export default class Square {
       }
       this.color = color
       // all squares have the same size so "size" variable can be used below
-      this.tile = Math.floor((posX - size * config.BLOCK_DISTANCE_FROM_LEFT_BORDER) / size)
+      this.tile = Math.round((posX - size * config.BLOCK_DISTANCE_FROM_LEFT_BORDER) / size)
    }
 
    draw() {
