@@ -53,7 +53,9 @@ function gameLoop() {
 
    clearCanvases()
 
-   level.bg.nextFrame()
+   level.bgLayers.forEach(layer => {
+      layer.nextFrame()
+   })
    level.drawBackground()
 
    level.nextFrame()
@@ -68,7 +70,7 @@ function gameLoop() {
       console.log('died');
       clearCanvases()
       level.reset()
-      level.bg.reset()
+      level.resetBackground()
       level.drawBackground()
       level.drawPlatforms()
       player1.respawn(level.platforms[0].position.y)

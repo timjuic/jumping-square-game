@@ -12,10 +12,13 @@ export default class Level {
       this.blockImagePaths = levelData.blockImages
       this.blockTypes = Object.keys(levelData.blockImages)
       this.blockImages = {}
-      this.bg = {
-         path: levelData.backgroundImage
-      }
+      this.backgroundLayers = levelData.backgroundLayers
+      this.bgLayers = []
       this.calculateAssets()
+   }
+
+   addPlayer(player) {
+      this.players.push(player)
    }
 
    async loadPlatformImgs() {
@@ -52,18 +55,6 @@ export default class Level {
       })
    }
 
-   async loadBackground() {
-      let img = await loadImage(this.bg.path)
-      this.bg = new Layer(img, this.canvas.width, this.canvas.height, 0.2, this.gameSpeed)
-   }
-
-   drawBackground() {
-      this.bg.draw()
-   }
-
-   async loadPlatformImages() {
-      // await Square.loadImage()
-   }
 
    nextFrame() {
       this.movedBy += this.gameSpeed
@@ -115,10 +106,6 @@ export default class Level {
       else return [true, (closestPlatformY - player.position.y - player.size) > 0 ? closestPlatformY - player.position.y - player.size : 0]
    }
 
-   addPlayer(player) {
-      this.players.push(player)
-   }
-
    checkIfPlayerDied(player) {
       let possibleCollidingPlatforms = this.platforms.filter(platform => platform.tile === player.tile || platform.tile === player.tile + 1)
       if (this.checkIfColliding(player, possibleCollidingPlatforms)) return true
@@ -142,6 +129,28 @@ export default class Level {
       this.platforms = []
       this.movedBy = 0
       this.generatePlatforms()
+   }
+
+
+   // Methods for working with background
+   async loadBackground() {
+      console.log(this.backgroundLayers);
+      for (let layerImgPath of Object.keys(this.backgroundLayers)) {
+         let img = await loadImage(layerImgPath)
+         this.bgLayers.push(new Layer(img, this.canvas.width, this.canvas.height, this.backgroundLayers[layerImgPath], this.gameSpeed))
+      }
+   }
+
+   drawBackground() {
+      this.bgLayers.forEach(layer => {
+         layer.draw()
+      })
+   }
+
+   resetBackground() {
+      this.bgLayers.forEach(layer => {
+         layer.reset()
+      })
    }
 }
 
