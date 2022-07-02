@@ -64,6 +64,15 @@ function gameLoop() {
    let currPlatform = level.getCurrentPlatform(player1)
    if (currPlatform?.type === '*') {
       currPlatform.activate(player1)
+   } else if (currPlatform?.type === '!') {
+      clearCanvases()
+      level.resetPlatforms()
+      level.resetBackground()
+      level.drawBackground()
+      level.drawPlatforms()
+      player1.respawn(level.getPlayerSpawnpointY())
+      gamePaused = true
+      return
    }
 
    player1.draw()
@@ -71,7 +80,7 @@ function gameLoop() {
    if (level.checkIfPlayerDied(player1)) {
       console.log('died');
       clearCanvases()
-      level.reset()
+      level.resetPlatforms()
       level.resetBackground()
       level.drawBackground()
       level.drawPlatforms()
@@ -116,7 +125,7 @@ async function generateLevel(levelInd) {
       level.blockSize,
       './images/player-sprites/2.png',
       level.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER,
-      level.getPlayerSpawnpointY()
+      level.getPlayerSpawnpointY(),
    )
 
    
@@ -164,8 +173,10 @@ window.addEventListener('keydown', function (e) {
       if (gamePaused) {
          gamePaused = false
          gameLoop()
+      } else {
+         if (!level.checkIfPlayerOnGround(player1)[0]) return
+         player1.jump()
       }
-      if (!level.checkIfPlayerOnGround(player1)[0]) return
-      player1.jump()
+      
    }
 })

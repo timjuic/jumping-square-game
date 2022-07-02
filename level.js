@@ -2,6 +2,8 @@ import Square from './square.js'
 import config from './game-config.js'
 import Layer from './layer.js'
 import Utils from './utils.js'
+import JumpPlatform from './platforms/jump-platform.js'
+import KillPlatform from './platforms/kill-platform.js'
 
 export default class Level {
    constructor(canvas, levelData) {
@@ -38,14 +40,32 @@ export default class Level {
          for (let i = 0; i < this.mapData.length; i++) {
             let blockType = this.mapData[i][j]
             if (blockType === '-' || blockType === 'p') continue
-            var square = new Square(
-               this.blockSize, 
-               this.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER + this.blockSize * j, 
-               this.blockSize * i,
-               this.blockImages[blockType],
-               blockType
+            if (blockType  === '#') {
+               var platform = new Square(
+                  this.blockSize,
+                  this.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER + this.blockSize * j,
+                  this.blockSize * i,
+                  this.blockImages[blockType],
+                  blockType
                )
-            this.platforms.push(square)
+            } else if (blockType === '*') {
+               var platform = new JumpPlatform(
+                  this.blockSize,
+                  this.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER + this.blockSize * j,
+                  this.blockSize * i,
+                  this.blockImages[blockType],
+                  blockType
+               )
+            } else if (blockType === '!') {
+               var platform = new KillPlatform(
+                  this.blockSize,
+                  this.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER + this.blockSize * j,
+                  this.blockSize * i,
+                  this.blockImages[blockType],
+                  blockType
+               )
+            }
+            this.platforms.push(platform)
          }
       }
    }
@@ -159,7 +179,7 @@ export default class Level {
       }
    }
 
-   reset() {
+   resetPlatforms() {
       this.platforms = []
       this.movedBy = 0
       this.generatePlatforms()
