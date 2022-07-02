@@ -17,7 +17,7 @@ let playBtn = document.querySelector('.play-btn')
 let ticksElapsed = 0
 let canvases = [playerCanvas, levelCanvas]
 let gamePaused = true
-let player1, level
+let player1, level, particleHandler
 let levelIndex = 0, playersNum
 
 canvases.forEach(canvas => {
@@ -45,7 +45,6 @@ let raf
 
 
 function gameLoop() {
-
    if (gamePaused) {
       cancelAnimationFrame(raf)
       return
@@ -59,10 +58,15 @@ function gameLoop() {
    level.nextFrame()
    level.drawPlatforms()
 
+   level.applyGravity(player1)
+   
 
-   level.applyGravity(levelsData[levelIndex])
+   let currPlatform = level.getCurrentPlatform(player1)
+   if (currPlatform?.type === '*') {
+      currPlatform.activate(player1)
+   }
+
    player1.draw()
-
 
    if (level.checkIfPlayerDied(player1)) {
       console.log('died');
@@ -71,7 +75,7 @@ function gameLoop() {
       level.resetBackground()
       level.drawBackground()
       level.drawPlatforms()
-      player1.respawn(level.platforms[0].position.y)
+      player1.respawn(level.getPlayerSpawnpointY())
       gamePaused = true
       return
    }
@@ -108,13 +112,14 @@ async function generateLevel(levelInd) {
    level.drawPlatforms()
 
    player1 = new Player(
-      'mratko', 
-      level.blockSize, 
-      './images/player-sprites/1.png', 
-      level.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER, 
-      level.platforms[0].position.y - level.blockSize
-      )
-      
+      'mratko',
+      level.blockSize,
+      './images/player-sprites/2.png',
+      level.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER,
+      level.getPlayerSpawnpointY()
+   )
+
+   
    level.addPlayer(player1)
    await player1.loadSprite()
    player1.draw()

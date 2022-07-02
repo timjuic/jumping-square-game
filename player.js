@@ -13,8 +13,9 @@ export default class Player extends Square {
       }
       this.imagePath = imagePath
       this.rotation = 0
-      this.jumpVelocity = size * config.JUMP_VELOCITY_MULTIPLIER * config.GLOBAL_GAME_SPEED_MULTIPLIER
+      this.jumpVelocity = size * config.JUMP_VELOCITY_MODIFIER * config.GLOBAL_GAME_SPEED_MULTIPLIER
       this.image
+      this.onGround = true
    }
 
    async loadSprite() {
@@ -22,7 +23,6 @@ export default class Player extends Square {
    }
 
    draw() {
-
       if (this.velocity.spin !== 0) {
          ctxPlayer.save()
          ctxPlayer.translate(
@@ -42,10 +42,6 @@ export default class Player extends Square {
             this.size,
          )
          ctxPlayer.restore()
-         if (this.rotation % 360 === 0) {
-            this.velocity.spin = 0
-            this.rotation = 0
-         }
       } else {
 
          ctxPlayer.drawImage(
@@ -61,12 +57,14 @@ export default class Player extends Square {
    jump() {
       this.velocity.y = -this.jumpVelocity
       this.velocity.spin = config.JUMP_SPIN_VELOCITY
+      this.onGround = false
    }
 
-   respawn(firstPlatformY) {
+   respawn(spawnpointY) {
       this.position.x = this.size * config.BLOCK_DISTANCE_FROM_LEFT_BORDER
-      this.position.y = firstPlatformY - this.size
+      this.position.y = spawnpointY
       this.rotation = 0
+      this.onGround = true
       this.draw()
    }
 }
