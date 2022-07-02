@@ -1,5 +1,4 @@
 import Player from './player.js'
-import Square from './square.js'
 import levelsData from './levels-data.js'
 import config from './game-config.js'
 import Level from './level.js'

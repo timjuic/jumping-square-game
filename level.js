@@ -96,11 +96,17 @@ export default class Level {
    checkIfPlayerOnGround(player) {
       let playerPositionIfGravityApplied = player.position.y + player.size + player.velocity.y + this.gravity
       let possibleCollidingPlatforms = this.platforms.filter(platform => platform.tile === player.tile || platform.tile === player.tile + 1)
-      let highestPlatformY = Math.min(...possibleCollidingPlatforms.map(p => p.position.y))
-      if (!highestPlatformY) highestPlatformY = levelCanvas.height
-      if (playerPositionIfGravityApplied <= highestPlatformY) return [false]
+      console.log(possibleCollidingPlatforms);
+
+      // Go through possibleCollidingPlatforms and check which one is the player closest to from above
+      let closestPlatformY =
+         Math.min(...possibleCollidingPlatforms
+            .filter(platform => platform.position.y - player.position.y >= 0)
+            .map(platform => platform.position.y))
+      
+      if (playerPositionIfGravityApplied <= closestPlatformY) return [false]
       else if (possibleCollidingPlatforms.every(p => player.position.y - player.size > p.position.y)) return [false]
-      else return [true, (highestPlatformY - player.position.y - player.size) > 0 ? highestPlatformY - player.position.y - player.size : 0]
+      else return [true, (closestPlatformY - player.position.y - player.size) > 0 ? closestPlatformY - player.position.y - player.size : 0]
    }
 
    addPlayer(player) {
