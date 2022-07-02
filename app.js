@@ -53,9 +53,7 @@ function gameLoop() {
 
    clearCanvases()
 
-   level.bgLayers.forEach(layer => {
-      layer.nextFrame()
-   })
+   level.nextBackgroundFrame()
    level.drawBackground()
 
    level.nextFrame()
@@ -79,7 +77,7 @@ function gameLoop() {
    }
 
    // Checking if level was moved to its end, which means player has won
-   if (level.movedBy + player1.size >= levelsData[levelIndex].mapData[0].length * level.blockSize) {
+   if (level.checkIfPlayerFinished(player1)) {
       console.log('You win');
       setTimeout(() => {
          levelIndex++

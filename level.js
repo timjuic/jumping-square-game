@@ -51,6 +51,7 @@ export default class Level {
 
    drawPlatforms() {
       this.platforms.forEach(platform => {
+         if (platform.position.x + platform.size < 0 || platform.position.x > this.canvas.width) return
          platform.draw()
       })
    }
@@ -125,6 +126,14 @@ export default class Level {
       })
    }
 
+   checkIfPlayerFinished(player) {
+      if (this.movedBy + player.size >= this.mapData[0].length * this.blockSize) {
+         return true
+      } else {
+         return false
+      }
+   }
+
    reset() {
       this.platforms = []
       this.movedBy = 0
@@ -134,7 +143,6 @@ export default class Level {
 
    // Methods for working with background
    async loadBackground() {
-      console.log(this.backgroundLayers);
       for (let layerImgPath of Object.keys(this.backgroundLayers)) {
          let img = await loadImage(layerImgPath)
          this.bgLayers.push(new Layer(img, this.canvas.width, this.canvas.height, this.backgroundLayers[layerImgPath], this.gameSpeed))
@@ -150,6 +158,12 @@ export default class Level {
    resetBackground() {
       this.bgLayers.forEach(layer => {
          layer.reset()
+      })
+   }
+
+   nextBackgroundFrame() {
+      this.bgLayers.forEach(layer => {
+         layer.nextFrame()
       })
    }
 }
