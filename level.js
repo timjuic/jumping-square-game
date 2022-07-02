@@ -9,25 +9,36 @@ export default class Level {
       this.blockSize = this.canvas.height / this.mapData.length
       this.platforms = []
       this.players = []
-
-      this.calculateAssets()
-
+      this.blockImagePaths = levelData.blockImages
+      this.blockTypes = Object.keys(levelData.blockImages)
+      this.blockImages = {}
       this.bg = {
          path: levelData.backgroundImage
       }
+      this.calculateAssets()
+   }
 
+   async loadPlatformImgs() {
+      for (let blockType of this.blockTypes) {
+         let img = await loadImage(this.blockImagePaths[blockType])
+         this.blockImages[blockType] = img
+      }
    }
 
    generatePlatforms() {
+      if (Object.keys(this.blockImages).length < this.blockTypes.length) {
+         throw new Error('Platform images are not loaded. Make sure to load them first with "loadPlatformImgs()"')
+      } 
+
       for (let j = 0; j < this.mapData[0].length; j++) {
          for (let i = 0; i < this.mapData.length; i++) {
             let blockType = this.mapData[i][j]
             if (blockType === '#') {
                var square = new Square(
                   this.blockSize, 
-                  'black', 
                   this.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER + this.blockSize * j, 
-                  this.blockSize * i
+                  this.blockSize * i,
+                  this.blockImages[blockType]
                   )
                this.platforms.push(square)
             } else continue
@@ -42,20 +53,16 @@ export default class Level {
    }
 
    async loadBackground() {
-      async function LoadImage(src) {
-         return await new Promise((resolve, reject) => {
-            const img = new Image()
-            img.onload = () => resolve(img)
-            img.onerror = reject
-            img.src = src
-         })
-      }
-      let img = await LoadImage(this.bg.path)
+      let img = await loadImage(this.bg.path)
       this.bg = new Layer(img, this.canvas.width, this.canvas.height, 0.2, this.gameSpeed)
    }
 
    drawBackground() {
       this.bg.draw()
+   }
+
+   async loadPlatformImages() {
+      // await Square.loadImage()
    }
 
    nextFrame() {
@@ -96,7 +103,6 @@ export default class Level {
    checkIfPlayerOnGround(player) {
       let playerPositionIfGravityApplied = player.position.y + player.size + player.velocity.y + this.gravity
       let possibleCollidingPlatforms = this.platforms.filter(platform => platform.tile === player.tile || platform.tile === player.tile + 1)
-      console.log(possibleCollidingPlatforms);
 
       // Go through possibleCollidingPlatforms and check which one is the player closest to from above
       let closestPlatformY =
@@ -137,4 +143,14 @@ export default class Level {
       this.movedBy = 0
       this.generatePlatforms()
    }
+}
+
+
+async function loadImage(src) {
+   return await new Promise((resolve, reject) => {
+      const img = new Image()
+      img.onload = () => resolve(img)
+      img.onerror = reject
+      img.src = src
+   })
 }

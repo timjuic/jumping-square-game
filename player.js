@@ -3,7 +3,7 @@ import config from './game-config.js'
 
 export default class Player extends Square {
    constructor(name, size, color, posX, posY) {
-      super(size, color, posX, posY)
+      super(size, posX, posY)
       this.name = name
       this.velocity = {
          x: 0,
@@ -57,9 +57,9 @@ export default class Player extends Square {
       this.velocity.spin = config.JUMP_SPIN_VELOCITY
    }
 
-   respawn(platforms) {
+   respawn(firstPlatformY) {
       this.position.x = this.size * config.BLOCK_DISTANCE_FROM_LEFT_BORDER
-      this.position.y = platforms[0].position.y - this.size
+      this.position.y = firstPlatformY - this.size
       this.rotation = 0
       this.draw()
    }

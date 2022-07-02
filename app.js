@@ -34,7 +34,6 @@ playBtn.addEventListener('click', function () {
    })
 
    resizeGame() // scaling the canvas for the current window size
-
    generateLevel(levelIndex)
 })
 
@@ -72,7 +71,7 @@ function gameLoop() {
       level.bg.reset()
       level.drawBackground()
       level.drawPlatforms()
-      player1.respawn(level.platforms)
+      player1.respawn(level.platforms[0].position.y)
       gamePaused = true
       return
    }
@@ -101,12 +100,21 @@ async function generateLevel(levelInd) {
    gamePaused = true
    clearCanvases()
    
+   await level.loadPlatformImgs()
    await level.loadBackground()
    level.drawBackground()
+   
    level.generatePlatforms()
    level.drawPlatforms()
 
-   player1 = new Player('mratko', level.blockSize, 'brown', level.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER, level.platforms[0].position.y - level.blockSize)
+   player1 = new Player(
+      'mratko', 
+      level.blockSize, 
+      'brown', 
+      level.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER, 
+      level.platforms[0].position.y - level.blockSize
+      )
+      
    level.addPlayer(player1)
    player1.draw()
 }

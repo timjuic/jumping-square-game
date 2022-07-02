@@ -51,17 +51,26 @@ let levelMaps = [
 let levels = [
    {
       mapData: levelMaps[0],
-      backgroundImage: './images/backgrounds/level1.jpg'
+      backgroundImage: './images/backgrounds/level1.jpg',
+      blockImages: {
+         '#': './images/blocks/a5.png'
+      }
    },
 
    {
       mapData: levelMaps[1],
-      backgroundImage: './images/backgrounds/level2.png'
+      backgroundImage: './images/backgrounds/level2.png',
+      blockImages: {
+         '#': './images/blocks/a6.png'
+      }
    },
 
    {
       mapData: levelMaps[2],
-      backgroundImage: './images/backgrounds/level2.png'
+      backgroundImage: './images/backgrounds/level2.png',
+      blockImages: {
+         '#': './images/blocks/a1.png'
+      }
    },
 ]
 

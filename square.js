@@ -2,13 +2,13 @@
 import config from './game-config.js'
 
 export default class Square {
-   constructor(size, color, posX, posY) {
+   constructor(size, posX, posY, image) {
       this.size = size
       this.position = {
          x: posX,
          y: posY,
       }
-      this.color = color
+      this.image = image
       // all squares have the same size so "size" variable can be used below
       this.tile = Math.round((posX - size * config.BLOCK_DISTANCE_FROM_LEFT_BORDER) / size)
    }
@@ -16,7 +16,8 @@ export default class Square {
    draw() {
       ctxLevel.fillStyle = this.color
 
-      ctxLevel.fillRect(
+      ctxLevel.drawImage(
+         this.image,
          this.position.x,
          this.position.y,
          this.size,
