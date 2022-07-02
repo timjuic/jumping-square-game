@@ -110,12 +110,13 @@ async function generateLevel(levelInd) {
    player1 = new Player(
       'mratko', 
       level.blockSize, 
-      'brown', 
+      './images/player-sprites/1.png', 
       level.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER, 
       level.platforms[0].position.y - level.blockSize
       )
       
    level.addPlayer(player1)
+   await player1.loadSprite()
    player1.draw()
 }
 

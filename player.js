@@ -1,8 +1,9 @@
 import Square from './square.js'
 import config from './game-config.js'
+import Utils from './utils.js'
 
 export default class Player extends Square {
-   constructor(name, size, color, posX, posY) {
+   constructor(name, size, imagePath, posX, posY) {
       super(size, posX, posY)
       this.name = name
       this.velocity = {
@@ -10,14 +11,17 @@ export default class Player extends Square {
          y: 1,
          spin: 0,
       }
-      this.color = color
+      this.imagePath = imagePath
       this.rotation = 0
       this.jumpVelocity = size * config.JUMP_VELOCITY_MULTIPLIER * config.GLOBAL_GAME_SPEED_MULTIPLIER
+      this.image
+   }
+
+   async loadSprite() {
+      this.image = await Utils.loadImage(this.imagePath)
    }
 
    draw() {
-      ctxPlayer.fillStyle = this.color
-      ctxPlayer.clearRect(0, 0, playerCanvas.width, playerCanvas.height)
 
       if (this.velocity.spin !== 0) {
          ctxPlayer.save()
@@ -30,7 +34,8 @@ export default class Player extends Square {
             -(this.position.x + this.size / 2),
             -(this.position.y + this.size / 2)
          )
-         ctxPlayer.fillRect(
+         ctxPlayer.drawImage(
+            this.image,
             this.position.x,
             this.position.y,
             this.size,
@@ -43,7 +48,8 @@ export default class Player extends Square {
          }
       } else {
 
-         ctxPlayer.fillRect(
+         ctxPlayer.drawImage(
+            this.image,
             this.position.x,
             this.position.y,
             this.size,

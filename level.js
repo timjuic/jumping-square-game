@@ -1,6 +1,7 @@
 import Square from './square.js'
 import config from './game-config.js'
 import Layer from './layer.js'
+import Utils from './utils.js'
 
 export default class Level {
    constructor(canvas, levelData) {
@@ -23,7 +24,7 @@ export default class Level {
 
    async loadPlatformImgs() {
       for (let blockType of this.blockTypes) {
-         let img = await loadImage(this.blockImagePaths[blockType])
+         let img = await Utils.loadImage(this.blockImagePaths[blockType])
          this.blockImages[blockType] = img
       }
    }
@@ -144,7 +145,7 @@ export default class Level {
    // Methods for working with background
    async loadBackground() {
       for (let layerImgPath of Object.keys(this.backgroundLayers)) {
-         let img = await loadImage(layerImgPath)
+         let img = await Utils.loadImage(layerImgPath)
          this.bgLayers.push(new Layer(img, this.canvas.width, this.canvas.height, this.backgroundLayers[layerImgPath], this.gameSpeed))
       }
    }
@@ -166,14 +167,4 @@ export default class Level {
          layer.nextFrame()
       })
    }
-}
-
-
-async function loadImage(src) {
-   return await new Promise((resolve, reject) => {
-      const img = new Image()
-      img.onload = () => resolve(img)
-      img.onerror = reject
-      img.src = src
-   })
 }

@@ -65,8 +65,8 @@ let levels = [
       mapData: levelMaps[1],
       backgroundLayers: {
          './images/backgrounds/Bg2/Layers/1.png': 0.02,
-         './images/backgrounds/Bg2/Layers/2.png': 0.4,
-         './images/backgrounds/Bg2/Layers/3.png': 0.7,
+         './images/backgrounds/Bg2/Layers/2.png': 0.1,
+         './images/backgrounds/Bg2/Layers/3.png': 0.6,
       },
       blockImages: {
          '#': './images/blocks/a6.png'
