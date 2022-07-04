@@ -15,7 +15,7 @@ export default class Square {
    }
 
    draw() {
-      ctxLevel.drawImage(
+      ctx.drawImage(
          this.image,
          this.position.x,
          this.position.y,

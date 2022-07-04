@@ -146,7 +146,7 @@ export default class Level {
          if (player.position.y > platform.position.y && player.position.y < platform.position.y + platform.size ||
             player.position.y + player.size > platform.position.y && player.position.y + player.size < platform.position.y + platform.size ||
             player.position.y === platform.position.y && player.position.y + player.size === platform.position.y + platform.size ||
-            player.position.y + player.size > playerCanvas.height) {
+            player.position.y + player.size > canvas.height) {
             return true
          } else {
             return false

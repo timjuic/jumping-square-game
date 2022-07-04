@@ -22,8 +22,8 @@ export default class Layer {
    }
 
    draw() {
-      ctxLevel.drawImage(this.image, this.x, this.y, this.width, this.height)
-      ctxLevel.drawImage(this.image, this.x2, this.y, this.width, this.height)
+      ctx.drawImage(this.image, this.x, this.y, this.width, this.height)
+      ctx.drawImage(this.image, this.x2, this.y, this.width, this.height)
    }
 
    reset() {

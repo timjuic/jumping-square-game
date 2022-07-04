@@ -24,27 +24,27 @@ export default class Player extends Square {
 
    draw() {
       if (this.velocity.spin !== 0) {
-         ctxPlayer.save()
-         ctxPlayer.translate(
+         ctx.save()
+         ctx.translate(
             this.position.x + this.size / 2,
             this.position.y + this.size / 2
          )
-         ctxPlayer.rotate(this.rotation * Math.PI / 360)
-         ctxPlayer.translate(
+         ctx.rotate(this.rotation * Math.PI / 360)
+         ctx.translate(
             -(this.position.x + this.size / 2),
             -(this.position.y + this.size / 2)
          )
-         ctxPlayer.drawImage(
+         ctx.drawImage(
             this.image,
             this.position.x,
             this.position.y,
             this.size,
             this.size,
          )
-         ctxPlayer.restore()
+         ctx.restore()
       } else {
 
-         ctxPlayer.drawImage(
+         ctx.drawImage(
             this.image,
             this.position.x,
             this.position.y,

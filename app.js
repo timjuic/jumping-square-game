@@ -3,10 +3,8 @@ import levelsData from './levels-data.js'
 import config from './game-config.js'
 import Level from './level.js'
 
-window.playerCanvas = document.getElementById('player-canvas')
-window.levelCanvas = document.getElementById('level-canvas')
-window.ctxPlayer = playerCanvas.getContext('2d')
-window.ctxLevel = levelCanvas.getContext('2d')
+window.canvas = document.querySelector('.game-canvas')
+window.ctx = window.canvas.getContext('2d')
 
 let guiContainer = document.querySelector('.gui-container')
 let htmlGameTitle = document.querySelector('.game-title')
@@ -14,24 +12,17 @@ let htmlPlayerNumber = document.querySelector('#player-number')
 let htmlLevelNumber = document.querySelector('#level-number')
 let playBtn = document.querySelector('.play-btn')
 
-let ticksElapsed = 0
-let canvases = [playerCanvas, levelCanvas]
 let gamePaused = true
-let player1, level, particleHandler
-let levelIndex = 0, playersNum
+let player1, level
+let levelIndex = 0
 
-canvases.forEach(canvas => {
-   canvas.style.display = 'none'
-})
+canvas.style.display = 'none'
 
 playBtn.addEventListener('click', function () {
-   playersNum = htmlPlayerNumber.value
    levelIndex = htmlLevelNumber.value - 1
    guiContainer.style.display = 'none'
    htmlGameTitle.style.display = 'none'
-   canvases.forEach(canvas => {
-      canvas.style.display = 'block'
-   })
+   canvas.style.display = 'block'
 
    resizeGame() // scaling the canvas for the current window size
    generateLevel(levelIndex)
@@ -50,7 +41,7 @@ function gameLoop() {
       return
    }
 
-   clearCanvases()
+   clearCanvas()
 
    level.nextBackgroundFrame()
    level.drawBackground()
@@ -65,7 +56,7 @@ function gameLoop() {
    if (currPlatform?.type === '*') {
       currPlatform.activate(player1)
    } else if (currPlatform?.type === '!') {
-      clearCanvases()
+      clearCanvas()
       level.resetPlatforms()
       level.resetBackground()
       level.drawBackground()
@@ -79,7 +70,7 @@ function gameLoop() {
 
    if (level.checkIfPlayerDied(player1)) {
       console.log('died');
-      clearCanvases()
+      clearCanvas()
       level.resetPlatforms()
       level.resetBackground()
       level.drawBackground()
@@ -99,8 +90,6 @@ function gameLoop() {
       return
    }
 
-   ticksElapsed++
-
    raf = requestAnimationFrame(gameLoop)
 }
 
@@ -108,10 +97,9 @@ function gameLoop() {
 async function generateLevel(levelInd) {
    if (levelsData[levelInd] === undefined) return
 
-   level = new Level(levelCanvas, levelsData[levelIndex])
-   ticksElapsed = 0
+   level = new Level(canvas, levelsData[levelIndex])
    gamePaused = true
-   clearCanvases()
+   clearCanvas()
    
    await level.loadPlatformImgs()
    await level.loadBackground()
@@ -123,7 +111,7 @@ async function generateLevel(levelInd) {
    player1 = new Player(
       'mratko',
       level.blockSize,
-      './images/player-sprites/2.png',
+      './images/player-sprites/8.png',
       level.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER,
       level.getPlayerSpawnpointY(),
    )
@@ -134,9 +122,8 @@ async function generateLevel(levelInd) {
    player1.draw()
 }
 
-function clearCanvases() {
-   ctxPlayer.clearRect(0, 0, playerCanvas.width, playerCanvas.height)
-   ctxLevel.clearRect(0, 0, levelCanvas.width, levelCanvas.height)
+function clearCanvas() {
+   ctx.clearRect(0, 0, canvas.width, canvas.height)
 }
 
 
@@ -146,16 +133,11 @@ function resizeGame() {
    let newAspectRatio = newWidth / newHeight
 
    if (newAspectRatio < config.ASPECT_RATIO) {
-      canvases.forEach(canvas => {
-         canvas.width = newWidth
-         canvas.height = newWidth / config.ASPECT_RATIO
-      })
-
+   canvas.width = newWidth
+   canvas.height = newWidth / config.ASPECT_RATIO
    } else {
-      canvases.forEach(canvas => {
-         canvas.height = newHeight
-         canvas.width = newHeight * config.ASPECT_RATIO
-      })
+      canvas.height = newHeight
+      canvas.width = newHeight * config.ASPECT_RATIO
    }
 }
 
@@ -167,7 +149,8 @@ function resizeAndRecalculate() {
 
 
 window.addEventListener('keydown', function (e) {
-   if (playerCanvas.style.display === 'none') return
+   player1.jump()
+   if (canvas.style.display === 'none') return
 
    if (e.code.toLowerCase() === 'arrowup' || e.code.toLowerCase() === 'space') {
       if (gamePaused) {
