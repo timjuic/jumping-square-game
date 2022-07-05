@@ -11,7 +11,6 @@ export default class Level {
       this.mapData = levelData.mapData
       this.blockSize = this.canvas.height / this.mapData.length
       this.platforms = []
-      this.players = []
       this.blockImagePaths = levelData.blockImages
       this.blockTypes = Object.keys(levelData.blockImages)
       this.blockImages = {}
@@ -20,8 +19,10 @@ export default class Level {
       this.calculateAssets()
    }
 
-   addPlayer(player) {
-      this.players.push(player)
+   calculateAssets() {
+      this.gravity = this.blockSize * config.GRAVITY_MODIFIER * config.GLOBAL_GAME_SPEED_MULTIPLIER
+      this.gameSpeed = this.blockSize * config.HORIZONTAL_MOVEMENT_SPEED_MODIFIER * config.GLOBAL_GAME_SPEED_MULTIPLIER
+      this.movedBy = 0
    }
 
    async loadPlatformImgs() {
@@ -78,71 +79,68 @@ export default class Level {
    }
 
 
-   nextFrame() {
+   // Change this
+   updatePlatforms() {
       this.movedBy += this.gameSpeed
       this.platforms.forEach(platform => {
          platform.position.x -= this.gameSpeed
       })
 
-      this.players.forEach(player => {
-         player.tile = Math.floor(Math.abs(this.platforms[0].position.x - this.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER) / this.blockSize)
-      })  
+      // This below has to be moved to updatePlayer
+      // player.tile = Math.floor(Math.abs(this.platforms[0].position.x - this.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER) / this.blockSize)
    }
 
-   calculateAssets() {
-      this.gravity = this.blockSize * config.GRAVITY_MODIFIER * config.GLOBAL_GAME_SPEED_MULTIPLIER
-      this.gameSpeed = this.blockSize * config.HORIZONTAL_MOVEMENT_SPEED_MODIFIER * config.GLOBAL_GAME_SPEED_MULTIPLIER
-      this.movedBy = 0
+   
+
+   // Change this
+   // applyGravity(player) {
+   //    let [colliding, velocityToAdd] = this.checkIfPlayerOnGround(player)
+   //    if (!colliding) {
+   //       player.velocity.y += this.gravity
+   //       player.position.y += player.velocity.y
+
+   //       // If there is spin velocity, apply it 
+   //       if (player.velocity.spin) {
+   //          player.rotation += player.velocity.spin
+   //          if (player.rotation % 360 === 0) {
+   //             player.velocity.spin = 0
+   //             player.rotation = 0
+   //          }
+   //       }
+   //    } else {
+   //       player.velocity.y = 0
+   //       player.onGround = true
+   //       if (velocityToAdd) player.position.y += velocityToAdd
+   //    }
+   // }
+
+   getPlatformsInPlayerTile(playerTile) {
+      let platformsInPlayerTile = this.platforms.filter(platform => platform.tile === playerTile || platform.tile === playerTile + 1)
+      this.platformsInPlayerTile = platformsInPlayerTile
    }
 
-   applyGravity(player) {
-      let [colliding, velocityToAdd] = this.checkIfPlayerOnGround(player)
-      if (!colliding) {
-         player.velocity.y += this.gravity
-         player.position.y += player.velocity.y
+   // Change this
+   // checkIfPlayerOnGround(player) {
+   //    let playerPositionIfGravityApplied = player.position.y + player.size + player.velocity.y + this.gravity
+   //    let possibleCollidingPlatforms = this.platforms.filter(platform => platform.tile === player.tile || platform.tile === player.tile + 1)
 
-         // If there is spin velocity, apply it 
-         if (player.velocity.spin) {
-            // console.log(player.velocity.spin);
-            player.rotation += player.velocity.spin
-            if (player.rotation % 360 === 0) {
-               player.velocity.spin = 0
-               player.rotation = 0
-            }
-         }
-      } else {
-         player.velocity.y = 0
-         player.onGround = true
-         if (velocityToAdd) player.position.y += velocityToAdd
-      }
-   }
-
-   checkIfPlayerOnGround(player) {
-      let playerPositionIfGravityApplied = player.position.y + player.size + player.velocity.y + this.gravity
-      let possibleCollidingPlatforms = this.platforms.filter(platform => platform.tile === player.tile || platform.tile === player.tile + 1)
-
-      // Go through possibleCollidingPlatforms and check which one is the player closest to from above
-      let closestPlatformY =
-         Math.min(...possibleCollidingPlatforms
-            .filter(platform => platform.position.y - player.position.y >= 0)
-            .map(platform => platform.position.y))
+   //    // Go through possibleCollidingPlatforms and check which one is the player closest to from above
+   //    let closestPlatformY =
+   //       Math.min(...possibleCollidingPlatforms
+   //          .filter(platform => platform.position.y - player.position.y >= 0)
+   //          .map(platform => platform.position.y))
       
-      if (playerPositionIfGravityApplied <= closestPlatformY) {
-         player.onGround = false
-         return [false]
-      }
-      else if (possibleCollidingPlatforms.every(p => player.position.y - player.size > p.position.y)) return [false]
-      else return [true, (closestPlatformY - player.position.y - player.size) > 0 ? closestPlatformY - player.position.y - player.size : 0]
-   }
+   //    if (playerPositionIfGravityApplied <= closestPlatformY) {
+   //       player.onGround = false
+   //       return [false]
+   //    }
+   //    else if (possibleCollidingPlatforms.every(p => player.position.y - player.size > p.position.y)) return [false]
+   //    else return [true, (closestPlatformY - player.position.y - player.size) > 0 ? closestPlatformY - player.position.y - player.size : 0]
+   // }
 
+   // Change this
    checkIfPlayerDied(player) {
-      let possibleCollidingPlatforms = this.platforms.filter(platform => platform.tile === player.tile || platform.tile === player.tile + 1)
-      if (this.checkIfColliding(player, possibleCollidingPlatforms)) return true
-      else return false
-   }
-
-   checkIfColliding(player, possibleCollidingPlatforms) {
-      return possibleCollidingPlatforms.some(platform => {
+      return this.platformsInPlayerTile.some(platform => {
          if (player.position.y > platform.position.y && player.position.y < platform.position.y + platform.size ||
             player.position.y + player.size > platform.position.y && player.position.y + player.size < platform.position.y + platform.size ||
             player.position.y === platform.position.y && player.position.y + player.size === platform.position.y + platform.size ||
@@ -170,6 +168,7 @@ export default class Level {
       }
       return currentPlatform
    }
+
 
    checkIfPlayerFinished(player) {
       if (this.movedBy + player.size >= this.mapData[0].length * this.blockSize) {
@@ -218,9 +217,17 @@ export default class Level {
       })
    }
 
-   nextBackgroundFrame() {
+   updateBackground() {
       this.bgLayers.forEach(layer => {
          layer.nextFrame()
       })
+   }
+
+   reset(player) {
+      this.resetPlatforms()
+      this.resetBackground()
+      this.drawBackground()
+      this.drawPlatforms()
+      player.respawn(this.getPlayerSpawnpointY())
    }
 }

@@ -3,12 +3,11 @@ import config from './game-config.js'
 import Utils from './utils.js'
 
 export default class Player extends Square {
-   constructor(name, size, imagePath, posX, posY) {
+   constructor(size, imagePath, posX, posY) {
       super(size, posX, posY)
-      this.name = name
       this.velocity = {
          x: 0,
-         y: 1,
+         y: 0,
          spin: 0,
       }
       this.imagePath = imagePath
@@ -54,7 +53,32 @@ export default class Player extends Square {
       }
    }
 
+   getCurrentTile(platforms) {
+      this.tile = Math.floor(Math.abs(platforms[0].position.x - this.size * config.BLOCK_DISTANCE_FROM_LEFT_BORDER) / this.size)
+   }
+
+   update(platformsInPlayerTile, gravity) {
+      let platformsBelowPlayer = platformsInPlayerTile.filter(platform => platform.position.y >= this.position.y + this.size)
+      let highestY = Math.min(...(platformsBelowPlayer.map(platform => platform.position.y)))
+      
+      if (this.position.y + this.size < highestY) { // If player is above, apply gravity
+         this.velocity.y += gravity
+         this.onGround = false
+      }
+
+      if (this.velocity.y) this.position.y += this.velocity.y // Updating player position
+
+      // If player position goes lower than the platform, set it back on top
+      if (this.position.y + this.size > highestY) {
+         this.position.y = highestY - this.size
+         this.velocity.y = 0
+         this.onGround = true
+      }
+
+   }
+
    jump() {
+      console.log('jump called');
       this.velocity.y = -this.jumpVelocity
       this.velocity.spin = config.JUMP_SPIN_VELOCITY
       this.onGround = false
