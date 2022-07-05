@@ -45,10 +45,7 @@ export default class Game {
       this.player.getCurrentTile(this.level.platforms)
       this.level.getPlatformsInPlayerTile(this.player.tile)
 
-      this.player.update(this.level.platformsInPlayerTile, this.level.gravity)
-
-
-      let currPlatform = this.level.getCurrentPlatform(this.player)
+      let currPlatform = this.level.getCurrentPlatform(this.level.platformsInPlayerTile, this.player)
       if (currPlatform?.type === '*') {
          currPlatform.activate(this.player)
       } else if (currPlatform?.type === '!') {
@@ -57,6 +54,11 @@ export default class Game {
          this.paused = true
          return
       }
+
+      this.player.update(this.level.platformsInPlayerTile, this.level.gravity)
+
+
+      
 
       this.player.draw()
 

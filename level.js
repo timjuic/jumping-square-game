@@ -78,65 +78,21 @@ export default class Level {
       })
    }
 
-
    // Change this
    updatePlatforms() {
       this.movedBy += this.gameSpeed
       this.platforms.forEach(platform => {
          platform.position.x -= this.gameSpeed
       })
-
-      // This below has to be moved to updatePlayer
-      // player.tile = Math.floor(Math.abs(this.platforms[0].position.x - this.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER) / this.blockSize)
    }
 
    
-
-   // Change this
-   // applyGravity(player) {
-   //    let [colliding, velocityToAdd] = this.checkIfPlayerOnGround(player)
-   //    if (!colliding) {
-   //       player.velocity.y += this.gravity
-   //       player.position.y += player.velocity.y
-
-   //       // If there is spin velocity, apply it 
-   //       if (player.velocity.spin) {
-   //          player.rotation += player.velocity.spin
-   //          if (player.rotation % 360 === 0) {
-   //             player.velocity.spin = 0
-   //             player.rotation = 0
-   //          }
-   //       }
-   //    } else {
-   //       player.velocity.y = 0
-   //       player.onGround = true
-   //       if (velocityToAdd) player.position.y += velocityToAdd
-   //    }
-   // }
 
    getPlatformsInPlayerTile(playerTile) {
       let platformsInPlayerTile = this.platforms.filter(platform => platform.tile === playerTile || platform.tile === playerTile + 1)
       this.platformsInPlayerTile = platformsInPlayerTile
    }
 
-   // Change this
-   // checkIfPlayerOnGround(player) {
-   //    let playerPositionIfGravityApplied = player.position.y + player.size + player.velocity.y + this.gravity
-   //    let possibleCollidingPlatforms = this.platforms.filter(platform => platform.tile === player.tile || platform.tile === player.tile + 1)
-
-   //    // Go through possibleCollidingPlatforms and check which one is the player closest to from above
-   //    let closestPlatformY =
-   //       Math.min(...possibleCollidingPlatforms
-   //          .filter(platform => platform.position.y - player.position.y >= 0)
-   //          .map(platform => platform.position.y))
-      
-   //    if (playerPositionIfGravityApplied <= closestPlatformY) {
-   //       player.onGround = false
-   //       return [false]
-   //    }
-   //    else if (possibleCollidingPlatforms.every(p => player.position.y - player.size > p.position.y)) return [false]
-   //    else return [true, (closestPlatformY - player.position.y - player.size) > 0 ? closestPlatformY - player.position.y - player.size : 0]
-   // }
 
    // Change this
    checkIfPlayerDied(player) {
@@ -152,10 +108,9 @@ export default class Level {
       })
    }
 
-   getCurrentPlatform(player) {
+   getCurrentPlatform(platformsInPlayerTile, player) {
       if (!player.onGround) return
-      let possiblePlatforms = this.platforms
-         .filter(platform => platform.tile === player.tile || platform.tile === player.tile + 1)
+      let possiblePlatforms = platformsInPlayerTile
          .filter(platform => platform.position.y === player.position.y + player.size)
       
       let currentPlatform, smallestDistance

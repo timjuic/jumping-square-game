@@ -78,10 +78,8 @@ export default class Player extends Square {
    }
 
    jump() {
-      console.log('jump called');
       this.velocity.y = -this.jumpVelocity
       this.velocity.spin = config.JUMP_SPIN_VELOCITY
-      this.onGround = false
    }
 
    respawn(spawnpointY) {
