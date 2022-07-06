@@ -57,9 +57,6 @@ export default class Game {
 
       this.player.update(this.level.platformsInPlayerTile, this.level.gravity)
 
-
-      
-
       this.player.draw()
 
       if (this.level.checkIfPlayerDied(this.player)) {
@@ -102,7 +99,7 @@ export default class Game {
 
       this.player = new Player(
          this.level.blockSize,
-         './images/player-sprites/8.png',
+         './images/player-sprites/9.png',
          this.level.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER,
          this.level.getPlayerSpawnpointY(),
       )

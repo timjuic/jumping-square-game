@@ -43,7 +43,7 @@ playBtn.addEventListener('click', async function () {
             game.paused = false
             game.start()
          } else {
-            if (!game.player.onGround) return
+            if (game.player.state !== 'sliding') return
             game.player.jump()
          }
       }

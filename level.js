@@ -109,7 +109,7 @@ export default class Level {
    }
 
    getCurrentPlatform(platformsInPlayerTile, player) {
-      if (!player.onGround) return
+      if (player.state !== 'sliding') return
       let possiblePlatforms = platformsInPlayerTile
          .filter(platform => platform.position.y === player.position.y + player.size)
       
@@ -144,7 +144,7 @@ export default class Level {
       this.mapData.forEach((row, rowIndex) => {
          let blockType = row[0]
          if (blockType.toLowerCase() === 'p') {            
-            spawnpointY = rowIndex * this.blockSize - 1
+            spawnpointY = rowIndex * this.blockSize
          }
       })
       if (spawnpointY) return spawnpointY

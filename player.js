@@ -12,9 +12,12 @@ export default class Player extends Square {
       }
       this.imagePath = imagePath
       this.rotation = 0
+      this.rotateBy = 0
       this.jumpVelocity = size * config.JUMP_VELOCITY_MODIFIER * config.GLOBAL_GAME_SPEED_MULTIPLIER
       this.image
-      this.onGround = true
+      this.states = ['sliding', 'jumping', 'falling']
+      this.state = this.states[0]
+      this.fallRotating = false
    }
 
    async loadSprite() {
@@ -22,13 +25,13 @@ export default class Player extends Square {
    }
 
    draw() {
-      if (this.velocity.spin !== 0) {
+      if (this.rotation !== 0) {
          ctx.save()
          ctx.translate(
             this.position.x + this.size / 2,
             this.position.y + this.size / 2
          )
-         ctx.rotate(this.rotation * Math.PI / 360)
+         ctx.rotate(this.rotation * Math.PI / 180)
          ctx.translate(
             -(this.position.x + this.size / 2),
             -(this.position.y + this.size / 2)
@@ -61,9 +64,11 @@ export default class Player extends Square {
       let platformsBelowPlayer = platformsInPlayerTile.filter(platform => platform.position.y >= this.position.y + this.size)
       let highestY = Math.min(...(platformsBelowPlayer.map(platform => platform.position.y)))
       
-      if (this.position.y + this.size < highestY) { // If player is above, apply gravity
+      if (this.position.y + this.size < highestY) { // If player is above platforms, apply gravity
          this.velocity.y += gravity
-         this.onGround = false
+         if (this.state !== 'jumping') {
+            this.state = this.states[2]
+         }
       }
 
       if (this.velocity.y) this.position.y += this.velocity.y // Updating player position
@@ -72,21 +77,50 @@ export default class Player extends Square {
       if (this.position.y + this.size > highestY) {
          this.position.y = highestY - this.size
          this.velocity.y = 0
-         this.onGround = true
+         this.state = this.states[0]
+         this.fallRotating = false
+      }
+
+
+      if (this.state === 'falling' && !this.fallRotating) {
+         console.log('activated fall rotation', this.rotateBy);
+         this.rotateBy = 90
+         this.velocity.spin = config.JUMP_SPIN_VELOCITY
+         this.fallRotating = true
+      }
+
+      // Rotating the player
+      if (this.velocity.spin) {
+         if (this.rotateBy > 0) {
+            
+            this.rotation += this.velocity.spin
+            this.rotateBy -= this.velocity.spin
+         } else {
+            this.velocity.spin = 0
+            this.rotateBy = 0
+         }
+         
+         if (this.rotation >= 360) this.rotation = 0
+         console.log('rotation', this.rotation);
       }
 
    }
 
    jump() {
+      console.log('jump called');
       this.velocity.y = -this.jumpVelocity
       this.velocity.spin = config.JUMP_SPIN_VELOCITY
+      this.rotateBy = (this.rotateBy + 180) > 360 ? (this.rotateBy + 180) % 360 : (this.rotateBy + 180)
+      this.state = this.states[1]
    }
 
    respawn(spawnpointY) {
       this.position.x = this.size * config.BLOCK_DISTANCE_FROM_LEFT_BORDER
       this.position.y = spawnpointY
       this.rotation = 0
-      this.onGround = true
+      this.rotateBy = 0
+      this.state = this.states[0]
+      this.fallRotating = false
       this.draw()
    }
 }
