@@ -29,6 +29,7 @@ export default class Utils {
       
       let chunkSize = 5
       let chunks = []
+      let start = Date.now()
       for (let i = 0; i < image.width / chunkSize; i++) {
          if (i % 2 === 0) continue // Skipping some pixels to improve performance
          for (let j = 0; j < image.height / chunkSize; j++) {
@@ -43,6 +44,7 @@ export default class Utils {
             chunks.push({chunk, color, position, chunkSize})
          }
       }
+      console.log('elapsed 1', Date.now() - start);
       return chunks
    }
 }

@@ -71,6 +71,7 @@ export default class Game {
          let chunks = Utils.getImageChunks(this.player.image, this.player.position.x, this.player.position.y, this.player.size, this.player.rotation)
          this.clearCanvas()
          let particles = []
+         let start = Date.now()
          chunks.forEach(chunk => {
             let velXDirection = Math.floor(Math.random() * 2) === 0 ? -1 : 1
             let velXMultiplier = Math.floor(Math.random() * 30)
@@ -78,8 +79,15 @@ export default class Game {
             let velYDirection = Math.floor(Math.random() * 2) === 0 ? -1 : 1
             let velYMultiplier = Math.floor(Math.random() * 30)
             let velY = velYDirection * Math.floor(Math.random() * velYMultiplier)
-            particles.push(new Particle(chunk.position.x, chunk.position.y, chunk.chunkSize, velX, velY, 0.8, chunk.color))
+            
+            // Calculating particle size and velocity based on window size
+            let size = chunk.chunkSize * this.level.blockSize / 50
+            velX = velX * this.level.blockSize / 50
+            velY = velY * this.level.blockSize / 50
+            let gravity = 0.8 * this.level.blockSize / 50
+            particles.push(new Particle(chunk.position.x, chunk.position.y, size, velX, velY, gravity, chunk.color))
          });
+         console.log('elapsed', Date.now() - start);
 
          let particleAnimationFrame
          let animateParticles = () => {
