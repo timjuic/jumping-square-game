@@ -1,5 +1,5 @@
 import config from "./game-config.js"
-import levelsData from './levels-data.js'
+import { levels as levelsData } from './levels-data.js'
 import Level from "./level.js"
 import Player from "./player.js"
 
@@ -114,6 +114,7 @@ export default class Game {
 
 
    resize() {
+      console.log('resize called');
       let newWidth = window.innerWidth
       let newHeight = window.innerHeight
       let newAspectRatio = newWidth / newHeight
@@ -126,8 +127,11 @@ export default class Game {
          canvas.width = newHeight * config.ASPECT_RATIO
       }
 
+      console.log(this.level);
       if (this.level) {
-         this.level.calculateAssets()
+         // Regenerating the level based on the new screen size
+         // This ensures that the game mechanics are the same on all screen sizes
+         this.generateLevel(this.levelIndex)
       }  
    }
 }

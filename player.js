@@ -17,7 +17,7 @@ export default class Player extends Square {
       this.image
       this.states = ['sliding', 'jumping', 'falling']
       this.state = this.states[0]
-      this.fallRotating = false
+      this.fallRotated = false
    }
 
    async loadSprite() {
@@ -71,28 +71,28 @@ export default class Player extends Square {
          }
       }
 
-      if (this.velocity.y) this.position.y += this.velocity.y // Updating player position
+      if (this.velocity.y) this.position.y += this.velocity.y // Updating player y position
 
       // If player position goes lower than the platform, set it back on top
       if (this.position.y + this.size > highestY) {
+         // Inside here we know that player is on ground (on platform)
          this.position.y = highestY - this.size
          this.velocity.y = 0
          this.state = this.states[0]
-         this.fallRotating = false
+         this.fallRotated = false
       }
 
 
-      if (this.state === 'falling' && !this.fallRotating) {
-         console.log('activated fall rotation', this.rotateBy);
+      // Player rotation when sliding off a platform 
+      // this.fallRotated is a helper variable which makes sure players spins only once for 90 deg
+      if (this.state === 'falling' && !this.fallRotated) {
          this.rotateBy = 90
          this.velocity.spin = config.JUMP_SPIN_VELOCITY
-         this.fallRotating = true
+         this.fallRotated = true
       }
 
       // Rotating the player
-      if (this.velocity.spin) {
          if (this.rotateBy > 0) {
-            
             this.rotation += this.velocity.spin
             this.rotateBy -= this.velocity.spin
          } else {
@@ -100,10 +100,8 @@ export default class Player extends Square {
             this.rotateBy = 0
          }
          
+         // Making sure player rotation doesnt go to infinity
          if (this.rotation >= 360) this.rotation = 0
-         console.log('rotation', this.rotation);
-      }
-
    }
 
    jump() {
@@ -117,10 +115,12 @@ export default class Player extends Square {
    respawn(spawnpointY) {
       this.position.x = this.size * config.BLOCK_DISTANCE_FROM_LEFT_BORDER
       this.position.y = spawnpointY
+      this.velocity.spin = 0
+      this.velocity.y = 0
       this.rotation = 0
       this.rotateBy = 0
       this.state = this.states[0]
-      this.fallRotating = false
+      this.fallRotated = false
       this.draw()
    }
 }

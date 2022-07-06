@@ -4,36 +4,36 @@ import Layer from './layer.js'
 import Utils from './utils.js'
 import JumpPlatform from './platforms/jump-platform.js'
 import KillPlatform from './platforms/kill-platform.js'
+import { platformImagePaths } from './levels-data.js'
 
 export default class Level {
    constructor(canvas, levelData) {
       this.canvas = canvas
       this.mapData = levelData.mapData
-      this.blockSize = this.canvas.height / this.mapData.length
       this.platforms = []
-      this.blockImagePaths = levelData.blockImages
-      this.blockTypes = Object.keys(levelData.blockImages)
-      this.blockImages = {}
+      this.blockTypes = Object.keys(platformImagePaths)
+      this.platformImages = {}
       this.backgroundLayers = levelData.backgroundLayers
       this.bgLayers = []
       this.calculateAssets()
    }
 
    calculateAssets() {
+      this.blockSize = this.canvas.height / this.mapData.length
       this.gravity = this.blockSize * config.GRAVITY_MODIFIER * config.GLOBAL_GAME_SPEED_MULTIPLIER
       this.gameSpeed = this.blockSize * config.HORIZONTAL_MOVEMENT_SPEED_MODIFIER * config.GLOBAL_GAME_SPEED_MULTIPLIER
       this.movedBy = 0
    }
 
    async loadPlatformImgs() {
-      for (let blockType of this.blockTypes) {
-         let img = await Utils.loadImage(this.blockImagePaths[blockType])
-         this.blockImages[blockType] = img
+      for (let blockType of Object.keys(platformImagePaths)) {
+         let img = await Utils.loadImage(platformImagePaths[blockType])
+         this.platformImages[blockType] = img
       }
    }
 
    generatePlatforms() {
-      if (Object.keys(this.blockImages).length < this.blockTypes.length) {
+      if (Object.keys(this.platformImages).length < Object.keys(platformImagePaths).length) {
          throw new Error('Platform images are not loaded. Make sure to load them first with "loadPlatformImgs()"')
       } 
 
@@ -46,7 +46,7 @@ export default class Level {
                   this.blockSize,
                   this.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER + this.blockSize * j,
                   this.blockSize * i,
-                  this.blockImages[blockType],
+                  this.platformImages[blockType],
                   blockType
                )
             } else if (blockType === '*') {
@@ -54,7 +54,7 @@ export default class Level {
                   this.blockSize,
                   this.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER + this.blockSize * j,
                   this.blockSize * i,
-                  this.blockImages[blockType],
+                  this.platformImages[blockType],
                   blockType
                )
             } else if (blockType === '!') {
@@ -62,7 +62,7 @@ export default class Level {
                   this.blockSize,
                   this.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER + this.blockSize * j,
                   this.blockSize * i,
-                  this.blockImages[blockType],
+                  this.platformImages[blockType],
                   blockType
                )
             }

@@ -1,7 +1,3 @@
-import Player from './player.js'
-import levelsData from './levels-data.js'
-import config from './game-config.js'
-import Level from './level.js'
 import Game from './game.js'
 
 window.canvas = document.querySelector('.game-canvas')
@@ -12,8 +8,6 @@ let htmlGameTitle = document.querySelector('.game-title')
 let htmlLevelNumber = document.querySelector('#level-number')
 let playBtn = document.querySelector('.play-btn')
 
-let gamePaused = true
-let player1, level
 let levelIndex = 0
 let game
 
@@ -31,8 +25,8 @@ playBtn.addEventListener('click', async function () {
    await game.generateLevel(levelIndex)
 
 
-   window.addEventListener('resize', game.resize, false)
-   window.addEventListener('orientationchange', game.resize, false)
+   window.addEventListener('resize', game.resize.bind(game), false)
+   window.addEventListener('orientationchange', game.resize.bind(game), false)
 
 
    window.addEventListener('keydown', function (e) {
