@@ -4,7 +4,7 @@ import Utils from './utils.js'
 
 export default class Player extends Square {
    constructor(size, imagePath, posX, posY) {
-      super(size, posX, posY)
+      super(size, posX, Math.floor(posY))
       this.velocity = {
          x: 0,
          y: 0,
@@ -18,6 +18,7 @@ export default class Player extends Square {
       this.states = ['sliding', 'jumping', 'falling']
       this.state = this.states[0]
       this.fallRotated = false
+      this.died = false
    }
 
    async loadSprite() {
@@ -121,6 +122,7 @@ export default class Player extends Square {
       this.rotateBy = 0
       this.state = this.states[0]
       this.fallRotated = false
+      this.died = false
       this.draw()
    }
 }

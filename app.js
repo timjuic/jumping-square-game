@@ -30,7 +30,7 @@ playBtn.addEventListener('click', async function () {
 
 
    window.addEventListener('keydown', function (e) {
-      if (canvas.style.display === 'none') return
+      if (canvas.style.display === 'none' || game.player.died) return
 
       if (e.code.toLowerCase() === 'arrowup' || e.code.toLowerCase() === 'space') {
          if (game.paused) {

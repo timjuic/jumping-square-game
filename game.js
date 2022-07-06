@@ -2,6 +2,8 @@ import config from "./game-config.js"
 import { levels as levelsData } from './levels-data.js'
 import Level from "./level.js"
 import Player from "./player.js"
+import Utils from "./utils.js"
+import Particle from "./particle.js"
 
 export default class Game {
    constructor() {
@@ -30,7 +32,7 @@ export default class Game {
       }
 
       if (this.paused) { 
-         cancelAnimationFrame(raf)
+         cancelAnimationFrame(this.raf)
          return
       }
 
@@ -55,15 +57,50 @@ export default class Game {
          return
       }
 
+
       this.player.update(this.level.platformsInPlayerTile, this.level.gravity)
 
       this.player.draw()
 
-      if (this.level.checkIfPlayerDied(this.player)) {
+      if (this.level.checkIfPlayerDied(this.player, this.player.position.x, this.player.position.y)) {
          console.log('died');
-         this.clearCanvas()
-         this.level.reset(this.player)
+         this.player.died = true
          this.paused = true
+
+         // Player death animation
+         let chunks = Utils.getImageChunks(this.player.image, this.player.position.x, this.player.position.y, this.player.size, this.player.rotation)
+         this.clearCanvas()
+         let particles = []
+         chunks.forEach(chunk => {
+            let velXDirection = Math.floor(Math.random() * 2) === 0 ? -1 : 1
+            let velXMultiplier = Math.floor(Math.random() * 30)
+            let velX = velXDirection * Math.floor(Math.random() * velXMultiplier)
+            let velYDirection = Math.floor(Math.random() * 2) === 0 ? -1 : 1
+            let velYMultiplier = Math.floor(Math.random() * 30)
+            let velY = velYDirection * Math.floor(Math.random() * velYMultiplier)
+            particles.push(new Particle(chunk.position.x, chunk.position.y, chunk.chunkSize, velX, velY, 0.8, chunk.color))
+         });
+
+         let particleAnimationFrame
+         let animateParticles = () => {
+            this.clearCanvas()
+            this.level.drawBackground()
+            this.level.drawPlatforms()
+            particles.forEach(particle => {
+               particle.update()
+               particle.draw()
+            })
+            
+            particleAnimationFrame = requestAnimationFrame(animateParticles)
+         }
+         animateParticles()
+
+         setTimeout(() => {
+            cancelAnimationFrame(particleAnimationFrame)
+            this.clearCanvas()
+            this.level.reset(this.player)
+         }, 1000);
+         
          return
       }
 
@@ -99,7 +136,7 @@ export default class Game {
 
       this.player = new Player(
          this.level.blockSize,
-         './images/player-sprites/9.png',
+         './images/player-sprites/8.png',
          this.level.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER,
          this.level.getPlayerSpawnpointY(),
       )
@@ -127,7 +164,6 @@ export default class Game {
          canvas.width = newHeight * config.ASPECT_RATIO
       }
 
-      console.log(this.level);
       if (this.level) {
          // Regenerating the level based on the new screen size
          // This ensures that the game mechanics are the same on all screen sizes
