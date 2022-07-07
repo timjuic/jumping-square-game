@@ -3,18 +3,21 @@ import { levels as levelsData } from './levels-data.js'
 import Level from "./level.js"
 import Player from "./player.js"
 import Utils from "./utils.js"
-import Particle from "./particle.js"
 import ParticleHandler from "./particle-handler.js"
 
 export default class Game {
    constructor() {
-      this.buffer = document.createElement('canvas').getContext('2d')
-      this.canvas = document.createElement('canvas')
-      this.ctx = canvas.getContext('2d')
+      window.bufferCanvas = document.createElement('canvas')
+      window.bufferCtx = bufferCanvas.getContext('2d')
+      window.canvas = document.createElement('canvas')
+      window.ctx = canvas.getContext('2d')
+      canvas.classList.add('game-canvas')
+      document.body.appendChild(canvas)
+      console.log(canvas);
       this.levelIndex
       this.level
       this.player
-      this.raf // Request animation frame
+      this.raf
       this.paused = true
    }
 
@@ -45,7 +48,7 @@ export default class Game {
       this.level.updatePlatforms()
       this.level.drawPlatforms()
 
-      this.player.getCurrentTile(this.level.platforms)
+      this.player.getCurrentTile(this.level.movedBy)
       this.level.getPlatformsInPlayerTile(this.player.tile)
 
       let currPlatform = this.level.getCurrentPlatform(this.level.platformsInPlayerTile, this.player)
@@ -61,9 +64,12 @@ export default class Game {
       this.player.update(this.level.platformsInPlayerTile, this.level.gravity)
       this.player.draw()
 
+      this.displayDeaths()
+
       if (this.level.checkIfPlayerDied(this.player, this.player.position.x, this.player.position.y)) {
          console.log('died');
          this.player.died = true
+         this.player.deaths++
          this.paused = true
 
          // Player death animation
@@ -78,6 +84,7 @@ export default class Game {
             this.level.drawPlatforms()
             particleHandler.updateParticles()
             particleHandler.drawParticles()
+            this.displayDeaths()
             particleAnimationFrame = requestAnimationFrame(animateParticles)
          }
          animateParticles()
@@ -86,6 +93,7 @@ export default class Game {
             cancelAnimationFrame(particleAnimationFrame)
             this.clearCanvas()
             this.level.reset(this.player)
+            this.displayDeaths()
          }, 1000);
          
          return
@@ -111,7 +119,7 @@ export default class Game {
       }
       this.levelIndex = levelIndex
       this.level = new Level(canvas, levelsData[levelIndex])
-      this.paused = true // Game paused when it loads, starts when player presses a button
+      this.pause() // Game paused when it loads, starts when player presses a button
       this.clearCanvas()
 
       await this.level.loadPlatformImgs()
@@ -119,7 +127,7 @@ export default class Game {
       this.level.drawBackground()
 
       this.level.generatePlatforms(this.buffer)
-      this.level.drawPlatforms()
+      // this.level.drawPlatforms()
 
       this.player = new Player(
          this.level.blockSize,
@@ -130,6 +138,8 @@ export default class Game {
 
       await this.player.loadSprite()
       this.player.draw()
+
+      this.displayDeaths()
    }
 
    clearCanvas() {
@@ -145,7 +155,7 @@ export default class Game {
 
       if (newAspectRatio < config.ASPECT_RATIO) {
          canvas.width = newWidth
-         canvas.height = newWidth / config.ASPECT_RATIO
+         canvas.height =  newWidth / config.ASPECT_RATIO
       } else {
          canvas.height = newHeight
          canvas.width = newHeight * config.ASPECT_RATIO
@@ -156,5 +166,11 @@ export default class Game {
          // This ensures that the game mechanics are the same on all screen sizes
          this.generateLevel(this.levelIndex)
       }  
+   }
+
+   displayDeaths() {
+      ctx.font = '20px serif'
+      ctx.fillStyle = 'black'
+      ctx.fillText(`Deaths: ${this.player.deaths}`, 50, 50)
    }
 }

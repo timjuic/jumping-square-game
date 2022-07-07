@@ -11,7 +11,7 @@ export default class ParticleHandler {
    createExplosionParticles(chunks) {
       chunks.forEach(chunk => {
          let velXDirection = Math.floor(Math.random() * 2) === 0 ? -1 : 1
-         let velXMultiplier = Math.floor(Math.random() * 30)
+         let velXMultiplier = Math.floor(Math.random() * 20)
          let velX = velXDirection * Math.floor(Math.random() * velXMultiplier)
          let velYDirection = Math.floor(Math.random() * 2) === 0 ? -1 : 1
          let velYMultiplier = Math.floor(Math.random() * 30)

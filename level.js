@@ -37,6 +37,9 @@ export default class Level {
          throw new Error('Platform images are not loaded. Make sure to load them first with "loadPlatformImgs()"')
       } 
 
+      bufferCanvas.width = this.mapData[0].length * this.blockSize
+      bufferCanvas.height = canvas.height
+
       for (let j = 0; j < this.mapData[0].length; j++) {
          for (let i = 0; i < this.mapData.length; i++) {
             let blockType = this.mapData[i][j]
@@ -67,23 +70,22 @@ export default class Level {
                )
             }
             this.platforms.push(platform)
+            bufferCtx.drawImage(platform.image, platform.position.x, platform.position.y, platform.size, platform.size)
          }
       }
+      ctx.drawImage(bufferCtx.canvas, 0, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height)
    }
 
    drawPlatforms() {
-      this.platforms.forEach(platform => {
-         if (platform.position.x + platform.size < 0 || platform.position.x > this.canvas.width) return
-         platform.draw()
-      })
+      ctx.drawImage(bufferCtx.canvas, this.movedBy, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height)
    }
 
    // Change this
    updatePlatforms() {
       this.movedBy += this.gameSpeed
-      this.platforms.forEach(platform => {
-         platform.position.x -= this.gameSpeed
-      })
+      // this.platforms.forEach(platform => {
+      //    platform.position.x -= this.gameSpeed
+      // })
    }
 
    
@@ -126,7 +128,7 @@ export default class Level {
 
 
    checkIfPlayerFinished(player) {
-      if (this.movedBy + player.size >= this.mapData[0].length * this.blockSize) {
+      if (this.movedBy + this.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER + this.blockSize >= this.mapData[0].length * this.blockSize) {
          return true
       } else {
          return false

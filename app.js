@@ -1,7 +1,7 @@
 import Game from './game.js'
 
-window.canvas = document.querySelector('.game-canvas')
-window.ctx = window.canvas.getContext('2d')
+// window.canvas = document.querySelector('.game-canvas')
+// window.ctx = window.canvas.getContext('2d')
 
 let guiContainer = document.querySelector('.gui-container')
 let htmlGameTitle = document.querySelector('.game-title')
@@ -11,13 +11,11 @@ let playBtn = document.querySelector('.play-btn')
 let levelIndex = 0
 let game
 
-canvas.style.display = 'none'
-
 playBtn.addEventListener('click', async function () {
+   console.log('called');
    levelIndex = htmlLevelNumber.value - 1
    guiContainer.style.display = 'none'
    htmlGameTitle.style.display = 'none'
-   canvas.style.display = 'block'
 
    game = new Game()
 

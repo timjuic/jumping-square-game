@@ -19,6 +19,7 @@ export default class Player extends Square {
       this.state = this.states[0]
       this.fallRotated = false
       this.died = false
+      this.deaths = 0
    }
 
    async loadSprite() {
@@ -57,8 +58,8 @@ export default class Player extends Square {
       }
    }
 
-   getCurrentTile(platforms) {
-      this.tile = Math.floor(Math.abs(platforms[0].position.x - this.size * config.BLOCK_DISTANCE_FROM_LEFT_BORDER) / this.size)
+   getCurrentTile(levelMovedBy) {
+      this.tile = Math.floor(Math.abs(levelMovedBy) / this.size)
    }
 
    update(platformsInPlayerTile, gravity) {
@@ -106,7 +107,6 @@ export default class Player extends Square {
    }
 
    jump() {
-      console.log('jump called');
       this.velocity.y = -this.jumpVelocity
       this.velocity.spin = config.JUMP_SPIN_VELOCITY
       this.rotateBy = (this.rotateBy + 180) > 360 ? (this.rotateBy + 180) % 360 : (this.rotateBy + 180)
