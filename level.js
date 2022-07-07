@@ -19,7 +19,7 @@ export default class Level {
    }
 
    calculateAssets() {
-      this.blockSize = this.canvas.height / this.mapData.length
+      this.blockSize = Math.round(this.canvas.height / this.mapData.length)
       this.gravity = this.blockSize * config.GRAVITY_MODIFIER * config.GLOBAL_GAME_SPEED_MULTIPLIER
       this.gameSpeed = this.blockSize * config.HORIZONTAL_MOVEMENT_SPEED_MODIFIER * config.GLOBAL_GAME_SPEED_MULTIPLIER
       this.movedBy = 0
@@ -70,17 +70,26 @@ export default class Level {
                )
             }
             this.platforms.push(platform)
-            bufferCtx.drawImage(platform.image, platform.position.x, platform.position.y, platform.size, platform.size)
+            
          }
       }
-      ctx.drawImage(bufferCtx.canvas, 0, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height)
+   }
+
+   preRenderPlatforms() {
+      this.platforms.forEach(platform => {
+         bufferCtx.drawImage(platform.image, platform.position.x, platform.position.y, platform.size, platform.size)
+      })
    }
 
    drawPlatforms() {
+      // Platforms are now prerendered on offscreen canvas, they are drawn with only this 1 draw call instead of the one commented below
       ctx.drawImage(bufferCtx.canvas, this.movedBy, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height)
+
+      // this.platforms.forEach(platform => {
+      //    platform.draw()
+      // })
    }
 
-   // Change this
    updatePlatforms() {
       this.movedBy += this.gameSpeed
       // this.platforms.forEach(platform => {
@@ -96,7 +105,6 @@ export default class Level {
    }
 
 
-   // Change this
    checkIfPlayerDied(player) {
       return this.platformsInPlayerTile.some(platform => {
          if (player.position.y > platform.position.y && player.position.y < platform.position.y + platform.size ||
@@ -135,12 +143,6 @@ export default class Level {
       }
    }
 
-   resetPlatforms() {
-      this.platforms = []
-      this.movedBy = 0
-      this.generatePlatforms()
-   }
-
    getPlayerSpawnpointY() {
       let spawnpointY
       this.mapData.forEach((row, rowIndex) => {
@@ -176,12 +178,12 @@ export default class Level {
 
    updateBackground() {
       this.bgLayers.forEach(layer => {
-         layer.nextFrame()
+         layer.update()
       })
    }
 
    reset(player) {
-      this.resetPlatforms()
+      this.movedBy = 0
       this.resetBackground()
       this.drawBackground()
       this.drawPlatforms()

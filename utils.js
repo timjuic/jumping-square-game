@@ -40,8 +40,8 @@ export default class Utils {
             let data = chunk.data
             let color = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`;
             let position = {
-               x: posX + j * size / image.width * chunkSize,
-               y: posY + i * size / image.width * chunkSize
+               x: Math.round(posX + j * size / image.width * chunkSize),
+               y: Math.round(posY + i * size / image.width * chunkSize)
             }
             chunks.push({chunk, color, position, chunkSize})
          }

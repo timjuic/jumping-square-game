@@ -73,12 +73,12 @@ export default class Player extends Square {
          }
       }
 
-      if (this.velocity.y) this.position.y += this.velocity.y // Updating player y position
+      if (this.velocity.y) this.position.y = Math.round(this.position.y + this.velocity.y) // Updating player y position
 
       // If player position goes lower than the platform, set it back on top
       if (this.position.y + this.size > highestY) {
          // Inside here we know that player is on ground (on platform)
-         this.position.y = highestY - this.size
+         this.position.y = Math.round(highestY - this.size)
          this.velocity.y = 0
          this.state = this.states[0]
          this.fallRotated = false
@@ -88,7 +88,7 @@ export default class Player extends Square {
       // Player rotation when sliding off a platform 
       // this.fallRotated is a helper variable which makes sure players spins only once for 90 deg
       if (this.state === 'falling' && !this.fallRotated) {
-         this.rotateBy = 90
+         this.rotateBy = config.PLAYER_SLIDEOFF_ROTATION
          this.velocity.spin = config.JUMP_SPIN_VELOCITY
          this.fallRotated = true
       }
@@ -109,13 +109,15 @@ export default class Player extends Square {
    jump() {
       this.velocity.y = -this.jumpVelocity
       this.velocity.spin = config.JUMP_SPIN_VELOCITY
-      this.rotateBy = (this.rotateBy + 180) > 360 ? (this.rotateBy + 180) % 360 : (this.rotateBy + 180)
+      this.rotateBy = (this.rotateBy + config.PLAYER_JUMP_ROTATION) > 360 ? 
+         (this.rotateBy + config.PLAYER_JUMP_ROTATION) % 360 : 
+         (this.rotateBy + config.PLAYER_JUMP_ROTATION)
       this.state = this.states[1]
    }
 
    respawn(spawnpointY) {
-      this.position.x = this.size * config.BLOCK_DISTANCE_FROM_LEFT_BORDER
-      this.position.y = spawnpointY
+      this.position.x = Math.round(this.size * config.BLOCK_DISTANCE_FROM_LEFT_BORDER)
+      this.position.y = Math.round(spawnpointY)
       this.velocity.spin = 0
       this.velocity.y = 0
       this.rotation = 0

@@ -10,7 +10,7 @@ export default class Layer {
       this.speed = gameSpeed * speedModifier
    }
 
-   nextFrame() {
+   update() {
       if (this.x <= -this.width) {
          this.x = this.width + this.x2 - this.speed
       }
