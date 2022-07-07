@@ -4,6 +4,7 @@ import Level from "./level.js"
 import Player from "./player.js"
 import Utils from "./utils.js"
 import Particle from "./particle.js"
+import ParticleHandler from "./particle-handler.js"
 
 export default class Game {
    constructor() {
@@ -57,9 +58,7 @@ export default class Game {
          return
       }
 
-
       this.player.update(this.level.platformsInPlayerTile, this.level.gravity)
-
       this.player.draw()
 
       if (this.level.checkIfPlayerDied(this.player, this.player.position.x, this.player.position.y)) {
@@ -69,36 +68,16 @@ export default class Game {
 
          // Player death animation
          let chunks = Utils.getImageChunks(this.player.image, this.player.position.x, this.player.position.y, this.player.size, this.player.rotation)
-         this.clearCanvas()
-         let particles = []
-         let start = Date.now()
-         chunks.forEach(chunk => {
-            let velXDirection = Math.floor(Math.random() * 2) === 0 ? -1 : 1
-            let velXMultiplier = Math.floor(Math.random() * 30)
-            let velX = velXDirection * Math.floor(Math.random() * velXMultiplier)
-            let velYDirection = Math.floor(Math.random() * 2) === 0 ? -1 : 1
-            let velYMultiplier = Math.floor(Math.random() * 30)
-            let velY = velYDirection * Math.floor(Math.random() * velYMultiplier)
-            
-            // Calculating particle size and velocity based on window size
-            let size = chunk.chunkSize * this.level.blockSize / 50
-            velX = velX * this.level.blockSize / 50
-            velY = velY * this.level.blockSize / 50
-            let gravity = 0.8 * this.level.blockSize / 50
-            particles.push(new Particle(chunk.position.x, chunk.position.y, size, velX, velY, gravity, chunk.color))
-         });
-         console.log('elapsed', Date.now() - start);
+         let particleHandler = new ParticleHandler(this.level.blockSize)
+         particleHandler.createExplosionParticles(chunks)
 
          let particleAnimationFrame
          let animateParticles = () => {
             this.clearCanvas()
             this.level.drawBackground()
             this.level.drawPlatforms()
-            particles.forEach(particle => {
-               particle.update()
-               particle.draw()
-            })
-            
+            particleHandler.updateParticles()
+            particleHandler.drawParticles()
             particleAnimationFrame = requestAnimationFrame(animateParticles)
          }
          animateParticles()
@@ -132,7 +111,7 @@ export default class Game {
       }
       this.levelIndex = levelIndex
       this.level = new Level(canvas, levelsData[levelIndex])
-      this.paused = true
+      this.paused = true // Game paused when it loads, starts when player presses a button
       this.clearCanvas()
 
       await this.level.loadPlatformImgs()

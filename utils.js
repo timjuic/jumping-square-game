@@ -28,11 +28,13 @@ export default class Utils {
       invisibleCtx.restore()
       
       let chunkSize = 5
+      let width = Math.floor(image.width / chunkSize)
+      let height = Math.floor(image.height / chunkSize)
       let chunks = []
       let start = Date.now()
-      for (let i = 0; i < image.width / chunkSize; i++) {
+      for (let i = 0; i < width; i++) {
          if (i % 2 === 0) continue // Skipping some pixels to improve performance
-         for (let j = 0; j < image.height / chunkSize; j++) {
+         for (let j = 0; j < height; j++) {
             if (j % 2 === 0) continue // Skipping some pixels to improve performance
             let chunk = invisibleCtx.getImageData(posX + j * chunkSize, posY + i * chunkSize, chunkSize, chunkSize)
             let data = chunk.data
@@ -44,7 +46,7 @@ export default class Utils {
             chunks.push({chunk, color, position, chunkSize})
          }
       }
-      console.log('elapsed 1', Date.now() - start);
+      console.log('elapsed 1', Date.now() - start, chunks.length);
       return chunks
    }
 }
