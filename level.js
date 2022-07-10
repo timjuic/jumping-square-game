@@ -20,8 +20,10 @@ export default class Level {
 
    calculateAssets() {
       this.blockSize = Math.round(this.canvas.height / this.mapData.length)
-      this.gravity = this.blockSize * config.GRAVITY_MODIFIER * config.GLOBAL_GAME_SPEED_MULTIPLIER
-      this.gameSpeed = this.blockSize * config.HORIZONTAL_MOVEMENT_SPEED_MODIFIER * config.GLOBAL_GAME_SPEED_MULTIPLIER
+      this.gravity = this.blockSize * config.GRAVITY_MODIFIER * config.GLOBAL_GAME_SPEED_MULTIPLIER / refreshRate
+      this.gameSpeed = this.blockSize * config.HORIZONTAL_MOVEMENT_SPEED_MODIFIER * config.GLOBAL_GAME_SPEED_MULTIPLIER / refreshRate
+      console.log('Gamespeed * refreshRate', this.gameSpeed * refreshRate);
+      console.log('gravity * refreshRate', this.gravity * refreshRate, this.gravity);
       this.movedBy = 0
    }
 

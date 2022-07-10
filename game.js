@@ -167,11 +167,10 @@ export default class Game {
 
    showDeathAnimation() {
       let chunks = Utils.getImageChunks(this.player.image, this.player.position.x, this.player.position.y, this.player.size, this.player.rotation)
-      let particleHandler = new ParticleHandler(this.level.blockSize)
+      let particleHandler = new ParticleHandler(this.level.blockSize, this.level.gravity)
       particleHandler.createExplosionParticles(chunks)
 
       let animateParticles = () => {
-         console.log('animating');
          this.clearCanvas()
          this.level.drawBackground()
          this.level.drawPlatforms()
@@ -191,6 +190,6 @@ export default class Game {
          this.level.reset(this.player)
          this.displayLevelNumber()
          this.displayDeaths()
-      }, 1000);
+      }, 2000);
    }
 }

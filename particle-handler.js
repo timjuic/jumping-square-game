@@ -2,10 +2,10 @@ import config from "./game-config.js"
 import Particle from "./particle.js";
 
 export default class ParticleHandler {
-   constructor(blockSize) {
+   constructor(blockSize, gravity) {
       this.particles = []
       this.levelBlockSize = blockSize
-      this.gravity = blockSize * config.GRAVITY_MODIFIER * config.GLOBAL_GAME_SPEED_MULTIPLIER
+      this.gravity = gravity / 2
    }
 
    createExplosionParticles(chunks) {

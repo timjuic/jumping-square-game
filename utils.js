@@ -46,7 +46,27 @@ export default class Utils {
             chunks.push({chunk, color, position, chunkSize})
          }
       }
-      console.log('elapsed 1', Date.now() - start, chunks.length);
       return chunks
+   }
+
+   static getMode(arr) {
+      let mostOccurencies = 0
+      let mostOccurentValue
+      let currentOccurencies = 0
+      let currentValue
+      arr.sort().forEach((value, index) => {
+         if (value !== currentValue) {
+            currentValue = value
+            currentOccurencies = 1
+         } else {
+            currentOccurencies++
+         }
+
+         if (currentOccurencies > mostOccurencies) {
+            mostOccurencies = currentOccurencies
+            mostOccurentValue = currentValue
+         }
+      })
+      return mostOccurentValue
    }
 }
