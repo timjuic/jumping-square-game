@@ -1,5 +1,6 @@
 import Game from './game.js'
 import Utils from './Utils.js'
+import { levels as levelsData } from './levels-data.js'
 
 let guiContainer = document.querySelector('.gui-container')
 let htmlGameTitle = document.querySelector('.game-title')
@@ -8,6 +9,13 @@ let playBtn = document.querySelector('.play-btn')
 
 let levelIndex = 0
 let game
+
+for (let i = 0; i < levelsData.length; i++) {
+   let option = document.createElement('option')
+   option.value = i + 1;
+   option.innerHTML = `Level ${i + 1}`
+   htmlLevelNumber.append(option)
+}
 
 async function getDisplayRefreshRate() {
    let framesToCheck = 10
@@ -61,6 +69,5 @@ getDisplayRefreshRate().then(refreshRate => {
          })
       })
    })
-
 }) 
 

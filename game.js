@@ -13,7 +13,6 @@ export default class Game {
       window.ctx = canvas.getContext('2d')
       canvas.classList.add('game-canvas')
       document.body.appendChild(canvas)
-      console.log(canvas);
       this.levelIndex
       this.level
       this.player
@@ -118,6 +117,7 @@ export default class Game {
          './images/player-sprites/11.png',
          this.level.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER,
          this.level.getPlayerSpawnpointY(),
+         this.level.gravity
       )
 
       await this.player.loadSprite()
@@ -146,6 +146,8 @@ export default class Game {
          canvas.width = newHeight * config.ASPECT_RATIO
       }
 
+      this.textSize = config.TEXT_SIZE_MODIFIER * canvas.height
+
       if (this.level) { // ensuring level is loaded
          // Regenerating the level based on the new screen size
          // This ensures that the game mechanics are the same on all screen sizes
@@ -154,15 +156,15 @@ export default class Game {
    }
 
    displayLevelNumber() {
-      ctx.font = '20px serif'
+      ctx.font = `${this.textSize}px serif`
       ctx.fillStyle = 'black'
-      ctx.fillText(`Level: ${this.levelIndex + 1}`, 50, 50)
+      ctx.fillText(`Level: ${this.levelIndex + 1}`, this.textSize, this.textSize * 2)
    }
 
    displayDeaths() {
-      ctx.font = '20px serif'
+      ctx.font = `${this.textSize}px serif`
       ctx.fillStyle = 'black'
-      ctx.fillText(`Deaths: ${this.player.deaths}`, 50, 80)
+      ctx.fillText(`Deaths: ${this.player.deaths}`, this.textSize, this.textSize * 2 + this.textSize * 1.5)
    }   
 
    showDeathAnimation() {
