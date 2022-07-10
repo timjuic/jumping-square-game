@@ -37,7 +37,7 @@ export default class Level {
          throw new Error('Platform images are not loaded. Make sure to load them first with "loadPlatformImgs()"')
       } 
 
-      bufferCanvas.width = this.mapData[0].length * this.blockSize
+      bufferCanvas.width = this.mapData[0].length * this.blockSize + this.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER
       bufferCanvas.height = canvas.height
 
       for (let j = 0; j < this.mapData[0].length; j++) {
@@ -136,7 +136,7 @@ export default class Level {
 
 
    checkIfPlayerFinished(player) {
-      if (this.movedBy + this.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER + this.blockSize >= this.mapData[0].length * this.blockSize) {
+      if (this.movedBy + this.blockSize >= this.mapData[0].length * this.blockSize) {
          return true
       } else {
          return false
