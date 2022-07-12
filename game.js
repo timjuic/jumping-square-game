@@ -93,8 +93,12 @@ export default class Game {
 
    async generateLevel(levelIndex) {
       if (levelsData[levelIndex] === undefined) {
-         throw new Error(`There is no level with index ${levelIndex}!`)
+         canvas.style.display = 'none'
+         guiContainer.style.display = 'block'
+         htmlGameTitle.style.display = 'block'
+         return
       }
+
       this.levelIndex = levelIndex
       this.level = new Level(canvas, levelsData[levelIndex])
       this.pause() // Game paused when it loads, starts when player presses a button
@@ -133,7 +137,6 @@ export default class Game {
 
 
    resize() {
-      console.log('resize called');
       let newWidth = window.innerWidth
       let newHeight = window.innerHeight
       let newAspectRatio = newWidth / newHeight

@@ -1,4 +1,3 @@
-import config from "./game-config.js"
 import Particle from "./particle.js";
 
 export default class ParticleHandler {

@@ -36,8 +36,8 @@ export default class Level {
       if (Object.keys(this.platformImages).length < Object.keys(platformImagePaths).length) {
          throw new Error('Platform images are not loaded. Make sure to load them first with "loadPlatformImgs()"')
       } 
-
-      bufferCanvas.width = this.mapData[0].length * this.blockSize + this.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER
+      let textSize = config.TEXT_SIZE_MODIFIER * canvas.height * 3
+      bufferCanvas.width = this.mapData[0].length * this.blockSize + this.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER + textSize * 4
       bufferCanvas.height = canvas.height
 
       for (let j = 0; j < this.mapData[0].length; j++) {
@@ -73,28 +73,35 @@ export default class Level {
             
          }
       }
+
    }
 
    preRenderPlatforms() {
       this.platforms.forEach(platform => {
          bufferCtx.drawImage(platform.image, platform.position.x, platform.position.y, platform.size, platform.size)
       })
+
+
+      // Drawing finish line and text
+      let textSize = config.TEXT_SIZE_MODIFIER * canvas.height * 3
+      let endOfLevelPosX = this.mapData[0].length * this.blockSize + this.blockSize * config.BLOCK_DISTANCE_FROM_LEFT_BORDER
+      bufferCtx.strokeStyle = 'green'
+      bufferCtx.moveTo(endOfLevelPosX, 0)
+      bufferCtx.lineTo(endOfLevelPosX, canvas.height)
+      bufferCtx.lineWidth = 5
+      bufferCtx.stroke()
+
+      bufferCtx.fillStyle = 'green'
+      bufferCtx.font = `${textSize}px serif`;
+      bufferCtx.fillText('Finish', endOfLevelPosX + textSize, textSize);
    }
 
    drawPlatforms() {
-      // Platforms are now prerendered on offscreen canvas, they are drawn with only this 1 draw call instead of the one commented below
       ctx.drawImage(bufferCtx.canvas, this.movedBy, 0, canvas.width, canvas.height, 0, 0, canvas.width, canvas.height)
-
-      // this.platforms.forEach(platform => {
-      //    platform.draw()
-      // })
    }
 
    updatePlatforms() {
       this.movedBy += this.gameSpeed
-      // this.platforms.forEach(platform => {
-      //    platform.position.x -= this.gameSpeed
-      // })
    }
 
    
@@ -156,7 +163,6 @@ export default class Level {
    }
 
 
-   // Methods for working with background
    async loadBackground() {
       for (let layerImgPath of Object.keys(this.backgroundLayers)) {
          let img = await Utils.loadImage(layerImgPath)

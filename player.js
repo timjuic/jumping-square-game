@@ -47,7 +47,6 @@ export default class Player extends Square {
          )
          ctx.restore()
       } else {
-
          ctx.drawImage(
             this.image,
             this.position.x,

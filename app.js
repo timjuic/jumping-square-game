@@ -1,9 +1,9 @@
 import Game from './game.js'
-import Utils from './Utils.js'
+import Utils from './utils.js'
 import { levels as levelsData } from './levels-data.js'
 
-let guiContainer = document.querySelector('.gui-container')
-let htmlGameTitle = document.querySelector('.game-title')
+window.guiContainer = document.querySelector('.gui-container')
+window.htmlGameTitle = document.querySelector('.game-title')
 let htmlLevelNumber = document.querySelector('#level-number')
 let playBtn = document.querySelector('.play-btn')
 
@@ -38,8 +38,6 @@ async function getDisplayRefreshRate() {
 getDisplayRefreshRate().then(refreshRate => {
    
    window.refreshRate = refreshRate
-   console.log(refreshRate);
-
    playBtn.addEventListener('click', async function () {
       levelIndex = htmlLevelNumber.value - 1
       guiContainer.style.display = 'none'
@@ -55,7 +53,7 @@ getDisplayRefreshRate().then(refreshRate => {
       let listenForEvents = ['keydown', 'mousedown']
       listenForEvents.forEach(eventName => {
          window.addEventListener(eventName, function (e) {
-            if (canvas.style.display === 'none' || game.player.died) return
+            if (canvas.style.display === 'none' || game.player.died || game.player.image === undefined) return
       
             if (e.code?.toLowerCase() === 'arrowup' || e.code?.toLowerCase() === 'space' || e.button === 0) {
                if (game.paused) {
