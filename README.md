@@ -1,3 +1,5 @@
 # Jumping Square Game
 
-> Simple javascript game inspired by geometry dash
+> Simple vanilla javascript game inspired by Geometry Dash
+
+You can play the game [here](https://jumping-square-game.web.app/)
